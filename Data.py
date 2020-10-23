@@ -44,6 +44,11 @@ class Searcher():
                 for prot in i[-1]:
                     if "Протокол от " in prot:
                         print (prot)
+                        doc = docx.Document(prot)
+                        fullText = []
+                        for para in doc.paragraphs:
+                            fullText.append(para.text)
+                        print('\n'.join(fullText))
         return
 
     def walklevel(self,some_dir, level=1):
