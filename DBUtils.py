@@ -1,12 +1,4 @@
 import sqlite3
-import numpy as np
-from Data import Searcher
-Search = Searcher(mainDir="/mnt/data/N_img")
-print(Search.searchDataFolderName())
-print(Search.searchDateData())
-print (Search.searchRatName())
-names = Search.searchRatName()
-dates = Search.searchDateData()
 import os.path
 
 

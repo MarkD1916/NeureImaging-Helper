@@ -1,6 +1,7 @@
-class Rat():
+class Session():
     def __init__(self):
-        self.mass: int = 0
+        self.sessionID:int = 0
+        self.RatID: int = 0
         self.drags: list[str] = [""]
         self.coudBound: int = 0
         self.medBoud: int = 0
@@ -9,20 +10,11 @@ class Rat():
         self.coords: list[[int,int]] = [[0,0]]
         self.folderName: str = " "
         self.date: str = " "
-        self.name:str = " "
 
-class Date():
+
+class Rat():
     def __init__(self):
-        self.date = ""
-        self.ratName = ""
-
-
-class Drugs():
-    def __init__(self):
-        self.name: str = ""
-
-
-class Concentration():
-    def __init__(self):
-        pass
+        self.RatID:int = 0
+        self.mass: int = 0
+        self.name: str = " "
 

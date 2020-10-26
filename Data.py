@@ -1,11 +1,19 @@
 import os
 import re
-import docx
+#import docx
+import numpy as np
+import docx2txt
+
 class Searcher():
 
     def __init__(self,mainDir):
         self.mainDir = mainDir
         self.topLevelName = []
+        self.drugsList=[]
+
+    def getDrugsList(self):
+        drugsList = np.loadtxt("./drugsFile.txt",dtype='str',delimiter='\t')
+        self.drugsList = drugsList
 
     def searchDataFolderName(self):
         self.topLevelName = [re.match(r"(\d+.\d+.\d+)\s([А-Я]+|[а-я]+)\-[1-9]+",name).group(0)
@@ -37,19 +45,29 @@ class Searcher():
         return
 
     def searchDrugsData(self):
+        AllDrugs=[]
         for folderName in self.topLevelName:
             path = os.path.join(self.mainDir,folderName)
-            #print (path)
             for i in self.walklevel(path,level=0):
+                Drugs = []
                 for prot in i[-1]:
+
                     if "Протокол от " in prot:
-                        print (prot)
-                        doc = docx.Document(prot)
-                        fullText = []
-                        for para in doc.paragraphs:
-                            fullText.append(para.text)
-                        print('\n'.join(fullText))
-        return
+
+                        text = docx2txt.process(os.path.join(path,prot))
+                        text_drugs = text[text.find(u"Вещество"):text.find(u"Вещество") + 300]
+                        for i,j in zip(np.unique(self.drugsList),range(len(self.drugsList))):
+                            if i.strip() in text_drugs:
+                                Drugs.append(i.strip())
+
+                        if len(re.findall(r"[1-9]\n", text_drugs))>len(np.unique(Drugs)):
+                            Drugs.append("Есть неизвестные вещества")
+                        AllDrugs.append(np.unique(Drugs))
+                if len(Drugs) == 0:
+                    AllDrugs.append(["Не обнаружен протокол"])
+
+        return AllDrugs
+
 
     def walklevel(self,some_dir, level=1):
         some_dir = some_dir.rstrip(os.path.sep)
@@ -60,36 +78,13 @@ class Searcher():
             num_sep_this = root.count(os.path.sep)
             if num_sep + level <= num_sep_this:
                 del dirs[:]
-    # def getText(filename):
-    #     doc = docx.Document(filename)
-    #     fullText = []
-    #     for para in doc.paragraphs:
-    #         fullText.append(para.text)
-    #     return '\n'.join(fullText)
-    # def load_prot(self, dirs):
-    #     prot = []
-    #     drugs_return = []
-    #     for dir in dirs:
-    #         for f in next(os.walk(self.dir + '/' + dir)):
-    #             for l in f:
-    #                 if 'docx' in l and 'Протокол от' in l:
-    #                     text = docx2txt.process(self.dir + '/' + dir + '/' + l)
-    #                     text_drugs = text[text.find(u"Вещество"):text.find(u"Вещество") + 300]
-    #                     indx_drugs = ([(m.start(0), m.end(0)) for m in re.finditer('\d\n|[а-я]\.\n', text_drugs)])
-    #                     # print text_drugs
-    #                     drugs = np.array([i[:-1] for i in
-    #                                       re.findall(u'[А-Я,а-я]+\,|[А-Я,а-я]+\s[А-Я,а-я]+\,',
-    #                                                  text_drugs[indx_drugs[0][0]:indx_drugs[-2][0]])])
-    #
-    #                     mass_rat_str = text[text.find(u"Масса"):text.find(u"Масса") + 20]
-    #                     prot.append(int(re.findall(r'\d+', mass_rat_str)[0]))
-    #                     drugs_return.append(drugs)
-    #
-    #     # print prot
-    #     return prot, drugs_return
+
 
 Search = Searcher(mainDir="/mnt/data/N_img")
 Search.searchDataFolderName()
-Search.searchDrugsData()
+print(Search.getDrugsList())
+print(Search.searchDrugsData())
+print(Search.searchRatName())
+print(Search.searchDateData())
 #
 #print(Search.searchDateData())
