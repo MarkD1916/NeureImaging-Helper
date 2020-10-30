@@ -3,6 +3,7 @@ import re
 #import docx
 import numpy as np
 import docx2txt
+import openpyxl
 
 class Searcher():
 
@@ -10,6 +11,9 @@ class Searcher():
         self.mainDir = mainDir
         self.topLevelName = []
         self.drugsList=[]
+        self.date = []
+        self.TrepanationWindowBordersNameCell = ["G2","G3","G4","G5"]
+        self.TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
 
     def getDrugsList(self):
         drugsList = np.loadtxt("./drugsFile.txt",dtype='str',delimiter='\t')
@@ -29,6 +33,7 @@ class Searcher():
                         for name in os.listdir(self.mainDir) if
                         os.path.isdir(os.path.join(self.mainDir, name))
                         and re.match(r"(\d+.\d+.\d+)\s([А-Я]+|[а-я]+)\-[1-9]+", name) is not None]
+        self.date = date
 
         return date
 
@@ -59,7 +64,6 @@ class Searcher():
                         for i,j in zip(np.unique(self.drugsList),range(len(self.drugsList))):
                             if i.strip() in text_drugs:
                                 Drugs.append(i.strip())
-
                         if len(re.findall(r"[1-9]\n", text_drugs))>len(np.unique(Drugs)):
                             Drugs.append("Есть неизвестные вещества")
                         AllDrugs.append(np.unique(Drugs))
@@ -79,12 +83,36 @@ class Searcher():
             if num_sep + level <= num_sep_this:
                 del dirs[:]
 
+    def searchBounderyData(self):
+        borders = []
+        for folderName,d in zip(self.topLevelName,self.date):
+            path = os.path.join(self.mainDir,folderName,d+"_coordinates","prog",d+"_ROI_LLM.xlsx")
+            bordersSizeList = [[], []]
+            try:
+                workbook = openpyxl.load_workbook(path,data_only=True)
+                sh = workbook["Sheet1"]
+                for cellName, bordersSize in zip(self.TrepanationWindowBordersNameCell,self.TrepanationWindowBordersSizeCell):
+                    print(sh[cellName].value,sh[bordersSize].value)
+                    bordersSizeList[0].append(sh[cellName].value)
+                    bordersSizeList[1].append(str(sh[bordersSize].value))
+            except FileNotFoundError:
+                #print ("NoFile")
+                bordersSizeList[0].append("No ROI_LLM file")
+                bordersSizeList[1].append("No ROI_LLM file")
+                bordersSizeList[0] = bordersSizeList[0] * 4
+                bordersSizeList[1] = bordersSizeList[1] * 4
+            borders.append(bordersSizeList)
+        return borders
+
+
 
 Search = Searcher(mainDir="/mnt/data/N_img")
 Search.searchDataFolderName()
-print(Search.getDrugsList())
-print(Search.searchDrugsData())
-print(Search.searchRatName())
-print(Search.searchDateData())
+# #print(Search.getDrugsList())
+#print(Search.searchDrugsData())
+# #print(Search.searchRatName())
+# #print(Search.searchDateData())
+Search.searchDateData()
+print(Search.searchBounderyData())
 #
 #print(Search.searchDateData())

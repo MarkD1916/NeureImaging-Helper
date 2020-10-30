@@ -1,7 +1,6 @@
 import sqlite3
 import os.path
-
-
+import string
 
 
 class Utils():
@@ -11,24 +10,19 @@ class Utils():
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
 
-    def selectAllFromDate(self):
-        sql = "SELECT * FROM Date"
+    def selectAllFromTable(self, tableName, field="*"):
+        sql = "SELECT {} FROM {}".format(field, tableName)
         self.cursor.execute(sql)
         return  self.cursor.fetchall()
 
-    def insertDate(self,data):
 
-        self.cursor.executemany("INSERT INTO date VALUES (?,?)", data)
+
+    def insertDataInTable(self,tableName,data):
+        types = ["?" for i in range(len(data[0]))]
+        print(types)
+        self.cursor.executemany("INSERT INTO {} VALUES {}".format(tableName,"("+",".join(types)+")"), data)
         self.conn.commit()
 
-    def deleteDateByDate(self,date):
-        pass
-
-    def deleteDateByName(self,name):
-        pass
-
-    def deleteDateByNameDate(self,data):
-        pass
 
     def dropTable(self, tableName):
         self.cursor.execute('drop table if exists ' + tableName)
@@ -41,7 +35,11 @@ class Utils():
         self.conn.commit()
 
 
-
+U = Utils()
+#U.createTable("Rat","RatID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL")
+U.insertDataInTable("Rat",[(None,"ФИ-113","500"),(None,"ФИ-11","504"),(None,"ФИ-1","500")])
+#U.dropTable("Rat")
+print(U.selectAllFromTable("Rat"))
 # Создание таблицы
 # cursor.execute("""CREATE TABLE Date
 #                   (date text, rat text)
