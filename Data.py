@@ -92,7 +92,6 @@ class Searcher():
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]
                 for cellName, bordersSize in zip(self.TrepanationWindowBordersNameCell,self.TrepanationWindowBordersSizeCell):
-                    print(sh[cellName].value,sh[bordersSize].value)
                     bordersSizeList[0].append(sh[cellName].value)
                     bordersSizeList[1].append(str(sh[bordersSize].value))
             except FileNotFoundError:
@@ -106,13 +105,14 @@ class Searcher():
 
 
 
-Search = Searcher(mainDir="/mnt/data/N_img")
-Search.searchDataFolderName()
-# #print(Search.getDrugsList())
-#print(Search.searchDrugsData())
-# #print(Search.searchRatName())
-# #print(Search.searchDateData())
-Search.searchDateData()
-print(Search.searchBounderyData())
+
+# Search = Searcher(mainDir="/mnt/data/N_img")
+# Search.searchDataFolderName()
+# # #print(Search.getDrugsList())
+# #print(Search.searchDrugsData())
+# # #print(Search.searchRatName())
+# # #print(Search.searchDateData())
+# Search.searchDateData()
+# print(Search.searchBounderyData())
 #
 #print(Search.searchDateData())
