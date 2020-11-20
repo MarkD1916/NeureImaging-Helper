@@ -14,6 +14,7 @@ class Searcher():
         self.date = []
         self.TrepanationWindowBordersNameCell = ["G2","G3","G4","G5"]
         self.TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
+        self.ROILLMFiles = []
 
     def getDrugsList(self):
         drugsList = np.loadtxt("./drugsFile.txt",dtype='str',delimiter='\t')
@@ -83,18 +84,28 @@ class Searcher():
             if num_sep + level <= num_sep_this:
                 del dirs[:]
 
-    def searchBounderyData(self):
-        borders = []
+    def searchRoiLLMFile(self):
         for folderName,d in zip(self.topLevelName,self.date):
             path = os.path.join(self.mainDir,folderName,d+"_coordinates","prog",d+"_ROI_LLM.xlsx")
-            bordersSizeList = [[], []]
+
             try:
+                workbook = openpyxl.load_workbook(path,data_only=True)
+                self.ROILLMFiles.append(path)
+            except FileNotFoundError:
+                self.ROILLMFiles.append("No file")
+        return self.ROILLMFiles
+
+    def searchBounderyData(self):
+        borders = []
+        for path in self.ROILLMFiles:
+            bordersSizeList = [[], []]
+            if path!="No file":
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]
                 for cellName, bordersSize in zip(self.TrepanationWindowBordersNameCell,self.TrepanationWindowBordersSizeCell):
                     bordersSizeList[0].append(sh[cellName].value)
                     bordersSizeList[1].append(str(sh[bordersSize].value))
-            except FileNotFoundError:
+            else:
                 #print ("NoFile")
                 bordersSizeList[0].append("No ROI_LLM file")
                 bordersSizeList[1].append("No ROI_LLM file")
@@ -103,16 +114,34 @@ class Searcher():
             borders.append(bordersSizeList)
         return borders
 
+    def searchCoordsInfo(self):
+        coordsInfoID={}
+        for path,ID in zip(self.ROILLMFiles,range(1,len(self.ROILLMFiles)+1)):
+            coordsInfo = {}
+            decodingColumnDrugName = "C"
+            if path != "No file":
+                workbook = openpyxl.load_workbook(path, data_only=True)
+                sh = workbook["Sheet1"]
+                val = 2
+                drugsNameList=[]
+                while val!=None:
+                    drugName = sh[decodingColumnDrugName+str(val)].value
+                    if drugName==None:
+                        break
+                    #print (drugName)
+                    drugsNameList.append(drugName)
+                    val+=1
+                #coordsInfo[path] = drugsNameList
+                coordsInfoID[ID] = drugsNameList
+        #print (coordsInfoID)
+        return coordsInfoID
+
 
 
 
 # Search = Searcher(mainDir="/mnt/data/N_img")
 # Search.searchDataFolderName()
-# # #print(Search.getDrugsList())
-# #print(Search.searchDrugsData())
-# # #print(Search.searchRatName())
-# # #print(Search.searchDateData())
 # Search.searchDateData()
+# print(Search.searchRoiLLMFile())
 # print(Search.searchBounderyData())
-#
-#print(Search.searchDateData())
+# Search.searchCoordsInfo()

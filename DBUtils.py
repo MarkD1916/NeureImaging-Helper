@@ -1,7 +1,7 @@
 import sqlite3
 import os.path
 import string
-
+from Data import Searcher
 
 class Utils():
     def __init__(self):
@@ -36,10 +36,34 @@ class Utils():
 
 
 U = Utils()
+Search = Searcher(mainDir="/mnt/data/N_img")
+Search.searchDataFolderName()
+date = Search.searchDateData()
+name = Search.searchRatName()
+
+Search.searchRoiLLMFile()
+Search.searchBounderyData()
+cordsDrugName = Search.searchCoordsInfo()
+print (cordsDrugName)
 #U.createTable("Rat","RatID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL")
-U.insertDataInTable("Rat",[(None,"ФИ-113","500"),(None,"ФИ-11","504"),(None,"ФИ-1","500")])
-#U.dropTable("Rat")
-print(U.selectAllFromTable("Rat"))
+#U.createTable("Experiments","ID INTEGER PRIMARY KEY , Name text NOT NULL, Date text NOT NULL")
+#U.createTable("ExperimentsMetaData",
+#              "MetaDataID INTEGER PRIMARY KEY , Drug text NOT NULL,ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
+#for date, name in zip(date,name):
+    #print (name,date)
+    #U.insertDataInTable("Experiments",[(None,name,date)])
+#for k in cordsDrugName.keys():
+    #for val in cordsDrugName[k]:
+        #U.insertDataInTable("ExperimentsMetaData",[(None,val,k)])
+#U.insertDataInTable("ExperimentsMetaData",[(None,"TNT",1),(None,"CRV",1),(None,"SPC",1)])
+#U.dropTable("Experiments")
+#U.dropTable("ExperimentsMetaData")
+print(U.selectAllFromTable("Experiments"))
+print(U.selectAllFromTable("ExperimentsMetaData"))
+
+
+
+
 # Создание таблицы
 # cursor.execute("""CREATE TABLE Date
 #                   (date text, rat text)

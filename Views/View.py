@@ -13,7 +13,7 @@ class app(Searcher):
         self.root.geometry("660x300")
         self.data = []
         self.root.resizable(width=False, height=False)
-
+        self.ROILLMFiles = []
         self.listboxName = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
         self.listboxName.place(x=10, y=32)
         self.listboxName.config()
@@ -25,6 +25,10 @@ class app(Searcher):
         self.listboxDrugs = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
         self.listboxDrugs.place(x=290, y=32)
         self.listboxDrugs.config()
+
+        self.listboxDrugsForPlot = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
+        self.listboxDrugsForPlot.place(x=10, y=164)
+        self.listboxDrugsForPlot.config()
 
         self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.plotBoundery)
         self.prev_button.place(x=440, y=32)
@@ -41,12 +45,12 @@ class app(Searcher):
         self.name = self.searchRatName()
 
         self.date = self.searchDateData()
-
+        self.ROILLMFiles = self.searchRoiLLMFile()
         self.Boundery = self.searchBounderyData()
+        self.coordsInfo = self.searchCoordsInfo()
 
 
-
-        self.selectedRatsByDrugs = []
+        self.selectedRatsByDrugs = range(len(self.dirs))
 
         self.g_i()
         self.selectName()
@@ -119,7 +123,6 @@ class app(Searcher):
                 if sd in d:
                     self.selectedRatsByDrugs.append(num)
         self.selectedRatsByDrugs = np.unique(self.selectedRatsByDrugs)
-        print (self.selectedRatsByDrugs,"<")
         self.g_i(selectedDrugsIndex=self.selectedRatsByDrugs)
         return value_name, value_idx
 
@@ -132,12 +135,11 @@ class app(Searcher):
         self.listboxDrugs.event_generate("<<ListboxSelect>>")
 
     def plotBoundery(self):
-        print (np.array(self.Boundery)[self.idx])
-
-        Rostral = float(np.array(self.Boundery)[self.idx][0][1][0])
-        Caudal = float(np.array(self.Boundery)[self.idx][0][1][1])
-        Medial = float(np.array(self.Boundery)[self.idx][0][1][2])
-        Lateral = float(np.array(self.Boundery)[self.idx][0][1][3])
+        boundary = np.array(self.Boundery)[self.selectedRatsByDrugs][self.idx]
+        Rostral = float(boundary[0][1][0])
+        Caudal = float(boundary[0][1][1])
+        Medial = float(boundary[0][1][2])
+        Lateral = float(boundary[0][1][3])
         plt.scatter(Caudal,Medial,color='green')
         plt.scatter(Rostral,Medial,color='green')
         plt.scatter(Caudal,Lateral,color='green')
