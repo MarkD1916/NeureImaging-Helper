@@ -16,6 +16,10 @@ class Utils():
         return  self.cursor.fetchall()
 
 
+    def selectFromExpandMetaExp(self,field):
+        sql = "SELECT DISTINCT {} FROM Experiments,ExperimentsMetaData WHERE ID=ExpId".format(field)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
 
     def insertDataInTable(self,tableName,data):
         types = ["?" for i in range(len(data[0]))]
@@ -35,6 +39,8 @@ class Utils():
         self.conn.commit()
 
 
+
+
 U = Utils()
 Search = Searcher(mainDir="/mnt/data/N_img")
 Search.searchDataFolderName()
@@ -44,7 +50,7 @@ name = Search.searchRatName()
 Search.searchRoiLLMFile()
 Search.searchBounderyData()
 cordsDrugName = Search.searchCoordsInfo()
-print (cordsDrugName)
+#print (cordsDrugName)
 #U.createTable("Rat","RatID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL")
 #U.createTable("Experiments","ID INTEGER PRIMARY KEY , Name text NOT NULL, Date text NOT NULL")
 #U.createTable("ExperimentsMetaData",
@@ -60,7 +66,7 @@ print (cordsDrugName)
 #U.dropTable("ExperimentsMetaData")
 print(U.selectAllFromTable("Experiments"))
 print(U.selectAllFromTable("ExperimentsMetaData"))
-
+print(U.selectFromExpandMetaExp("Name"))
 
 
 

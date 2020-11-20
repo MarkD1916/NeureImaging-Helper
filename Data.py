@@ -128,12 +128,9 @@ class Searcher():
                     drugName = sh[decodingColumnDrugName+str(val)].value
                     if drugName==None:
                         break
-                    #print (drugName)
                     drugsNameList.append(drugName)
                     val+=1
-                #coordsInfo[path] = drugsNameList
                 coordsInfoID[ID] = drugsNameList
-        #print (coordsInfoID)
         return coordsInfoID
 
 
