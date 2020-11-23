@@ -3,12 +3,14 @@ from tkinter import *
 from Data import Searcher
 import numpy as np
 import matplotlib.pyplot as plt
-class app(Searcher):
-    def __init__(self):
+from Presenters.Presenter import PlotPresenter
+
+class mainWindow(Searcher):
+    def __init__(self,root):
         self.TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
         self.TrepanationWindowBordersSizeCell = ["H2", "H3","H4", "H5"]
         self.mainDir = "/mnt/data/N_img"
-        self.root = Tk()
+        self.root = root
         self.root.title("NeuroImagingHelper")
         self.root.geometry("660x300")
         self.data = []
@@ -30,7 +32,7 @@ class app(Searcher):
         self.listboxDrugsForPlot.place(x=10, y=164)
         self.listboxDrugsForPlot.config()
 
-        self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.plotBoundery)
+        self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.new_window)
         self.prev_button.place(x=440, y=32)
         self.prev_button.config()
 
@@ -60,8 +62,8 @@ class app(Searcher):
 
         self.g_i_Drugs()
 
-        self.root.configure(background='#d8e1e1')
-        self.root.mainloop()
+        self.root.configure(background='#fdfbfb')
+        # self.root.mainloop()
 
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
@@ -134,6 +136,10 @@ class app(Searcher):
         self.listboxDrugs.select_set(0)
         self.listboxDrugs.event_generate("<<ListboxSelect>>")
 
+    def new_window(self):
+        self.newWindow = Tk()
+        self.app = plotWindow(self.newWindow,str(self.idx))
+
     def plotBoundery(self):
         boundary = np.array(self.Boundery)[self.selectedRatsByDrugs][self.idx]
         Rostral = float(boundary[0][1][0])
@@ -159,4 +165,26 @@ class app(Searcher):
         plt.show()
         return
 
-A = app()
+class plotWindow():
+    def __init__(self, root, name):
+        self.root = root
+        self.root.title(name)
+        self.root.geometry("660x300")
+        self.frame = Frame(self.root)
+        self.update_button = Button(self.root,text=u"Обновить график", background='#d8e1e1', command=self.newData)
+        self.update_button.place(x=440, y=32)
+        self.frame.place()
+        self.update_button.config()
+
+
+    def newData(self):
+        print (PlotPresenter().currentData)
+
+#A = app()
+def main():
+    root = Tk()
+    app = mainWindow(root)
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()

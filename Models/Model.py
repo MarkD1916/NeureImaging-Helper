@@ -37,3 +37,6 @@ class Cords():
         self.yValue=yValue
         self.region=region
 
+class Users():
+    def __init__(self):
+        pass
