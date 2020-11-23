@@ -87,7 +87,7 @@ class Searcher():
     def searchRoiLLMFile(self):
         for folderName,d in zip(self.topLevelName,self.date):
             path = os.path.join(self.mainDir,folderName,d+"_coordinates","prog",d+"_ROI_LLM.xlsx")
-
+            print(path)
             try:
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 self.ROILLMFiles.append(path)
@@ -96,23 +96,25 @@ class Searcher():
         return self.ROILLMFiles
 
     def searchBounderyData(self):
+        bounderyInfoID = {}
         borders = []
-        for path in self.ROILLMFiles:
-            bordersSizeList = [[], []]
+        for path, ID in zip(self.ROILLMFiles,range(1,len(self.ROILLMFiles)+1)):
             if path!="No file":
+                bordersSizeList = [[], []]
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]
                 for cellName, bordersSize in zip(self.TrepanationWindowBordersNameCell,self.TrepanationWindowBordersSizeCell):
                     bordersSizeList[0].append(sh[cellName].value)
                     bordersSizeList[1].append(str(sh[bordersSize].value))
-            else:
-                #print ("NoFile")
-                bordersSizeList[0].append("No ROI_LLM file")
-                bordersSizeList[1].append("No ROI_LLM file")
-                bordersSizeList[0] = bordersSizeList[0] * 4
-                bordersSizeList[1] = bordersSizeList[1] * 4
-            borders.append(bordersSizeList)
-        return borders
+                bounderyInfoID[ID] = bordersSizeList
+            # else:
+            #     bordersSizeList[0].append("No ROI_LLM file")
+            #     bordersSizeList[1].append("No ROI_LLM file")
+            #     bordersSizeList[0] = bordersSizeList[0] * 4
+            #     bordersSizeList[1] = bordersSizeList[1] * 4
+            #borders.append(bordersSizeList)
+
+        return bounderyInfoID
 
     def searchCoordsInfo(self):
         coordsInfoID={}
@@ -136,9 +138,9 @@ class Searcher():
 
 
 
-# Search = Searcher(mainDir="/mnt/data/N_img")
-# Search.searchDataFolderName()
-# Search.searchDateData()
-# print(Search.searchRoiLLMFile())
-# print(Search.searchBounderyData())
-# Search.searchCoordsInfo()
+Search = Searcher(mainDir="D:/N_img")
+Search.searchDataFolderName()
+Search.searchDateData()
+Search.searchRoiLLMFile()
+print(Search.searchBounderyData())
+Search.searchCoordsInfo()
