@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="07f1e2a0-5d5f-4016-aecc-1f26444fd0e3" name="Default Changelist" comment="add parse docx">
-      <change afterPath="$PROJECT_DIR$/.idea/NeureImaging-Helper.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/NeuroImagingHelper.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DBUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/DBUtils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/Model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Presenters/Presenter.py" beforeDir="false" afterPath="$PROJECT_DIR$/Presenters/Presenter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Views/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/Views/View.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,7 +40,7 @@
       <recent name="$PROJECT_DIR$/Views" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Data">
+  <component name="RunManager" selected="Python.View">
     <configuration name="DBUtils" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -168,22 +162,22 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="96" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680@0.0.1280.680" timestamp="1606044974650" />
-    <state width="1259" height="190" key="GridCell.Tab.0.bottom" timestamp="1606056813969">
+    <state width="1259" height="43" key="GridCell.Tab.0.bottom" timestamp="1606155245033">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1259" height="190" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1606056813969" />
-    <state width="1259" height="190" key="GridCell.Tab.0.center" timestamp="1606056813969">
+    <state width="1259" height="43" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1606155245033" />
+    <state width="1259" height="43" key="GridCell.Tab.0.center" timestamp="1606155245033">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1259" height="190" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1606056813969" />
-    <state width="1259" height="190" key="GridCell.Tab.0.left" timestamp="1606056813969">
+    <state width="1259" height="43" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1606155245033" />
+    <state width="1259" height="43" key="GridCell.Tab.0.left" timestamp="1606155245032">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1259" height="190" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1606056813969" />
-    <state width="1259" height="190" key="GridCell.Tab.0.right" timestamp="1606056813969">
+    <state width="1259" height="43" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1606155245032" />
+    <state width="1259" height="43" key="GridCell.Tab.0.right" timestamp="1606155245033">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1259" height="190" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1606056813969" />
+    <state width="1259" height="43" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1606155245033" />
     <state x="284" y="0" key="SettingsEditor" timestamp="1606046200731">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

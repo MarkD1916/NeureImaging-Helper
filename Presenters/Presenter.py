@@ -1,5 +1,3 @@
-class Drawer():
+class PlotPresenter():
     def __init__(self):
-        pass
-    def plotBoundery(self):
-        return
+        self.currentData = "NewData"
