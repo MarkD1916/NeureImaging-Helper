@@ -7,7 +7,6 @@ class Utils():
     def __init__(self):
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         self.db_path = os.path.join(BASE_DIR, 'NBDB.db')
-        print(self.db_path)
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
 
@@ -54,51 +53,56 @@ class Utils():
 
 
 U = Utils()
-Search = Searcher(mainDir="D:/N_img")
-Search.searchDataFolderName()
-date = Search.searchDateData()
-name = Search.searchRatName()
-#
-Search.searchRoiLLMFile()
-boundary = Search.searchBounderyData()
-cordsDrugName = Search.searchCoordsInfo()
-print (cordsDrugName)
-# #U.createTable("Rat","RatID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL")
-# U.createTable("Experiments","ID INTEGER PRIMARY KEY , Name text NOT NULL, Date text NOT NULL")
-# U.createTable("Boundary",
-#               "BoundaryID INTEGER PRIMARY KEY , BoundaryName text NOT NULL, BoundaryValue text NOT NULL,ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
-# U.createTable("ExperimentsMetaData",
-#              "MetaDataID INTEGER PRIMARY KEY , Drug text NOT NULL,ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
-# for date, name in zip(date,name):
-#     print (name,date)
-#     U.insertDataInTable("Experiments",[(None,name,date)])
-# for k in cordsDrugName.keys():
-#     for val in cordsDrugName[k]:
-#         U.insertDataInTable("ExperimentsMetaData",[(None,val,k)])
-# for k in boundary.keys():
-#     for val1,val2 in zip(boundary[k][0],boundary[k][1]):
-#         U.insertDataInTable("Boundary",[(None,val1,val2,k)])
+Search = Searcher(mainDir="/mnt/data/N_img")
+Search.searchDateData()
 
+path,name = Search.searchExpPath()
+methodCalc = Search.searchExpMethod()
+print(Search.searchRoiLLMFile())
+drugs = Search.searchDrugs()
+valves = Search.searchValve()
+#print (path)
+#print (methodCalc)
 #U.dropTable("Rat")
-# U.dropTable("Boundary")
-# U.dropTable("ExperimentsMetaData")
+#U.dropTable("Boundary")
+# U.dropTable("Experiments")
+# for p,n in zip(path,name):
+#     U.insertDataInTable("Experiments",[(None,p,n)])
+print(drugs)
+print (valves)
+# for d in drugs.keys():
+#     for val in drugs[d]:
+#         U.insertDataInTable("Drugs",[(None,val,d)])
+#
+# U.createTable("Experiments","ID INTEGER PRIMARY KEY , Path text NOT NULL, Name text NOT NULL")
+#
+# U.createTable("Rat","ID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL,ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
+#
+# U.createTable("Boundary",
+#               "ID INTEGER PRIMARY KEY ,\
+#               Rostral text NOT NULL,\
+#               Caudal text NOT NULL, \
+#               Medial text NOT NULL, \
+#               Lateral text NOT NULL,\
+#               ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
+#
+# U.createTable("Drugs",
+#              "ID INTEGER PRIMARY KEY ,\
+#               DrugName text NOT NULL,\
+#               ExpId INTEGER NOT NULL,\
+#               Valve INTEGER NOT NULL,\
+#               FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
+#
+# U.createTable("Cords",
+#              "ID INTEGER PRIMARY KEY ,\
+#               xValue REAL,\
+#               yValue REAL,\
+#               Region Text,\
+#               ExpId INTEGER NOT NULL,\
+#               FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 
 
 
-#print(U.selectAllFromTable("ExperimentsMetaData"))
-#print(U.selectAllFromTable("Experiments"))
-#print(U.selectFromExpAndMetaExp("Drug"))
-#print(U.selectAllFromTable("Experiments","Name"))
 
 
-# Создание таблицы
-# cursor.execute("""CREATE TABLE Date
-#                   (date text, rat text)
-#                """)
-#cursor.executemany("INSERT INTO date VALUES (?,?)", np.transpose([dates,names]))
-# conn = sqlite3.connect('NBDB.db')
-# cursor = conn.cursor()
-# sql = "SELECT date FROM Date"
-# cursor.execute(sql)
-# print(cursor.fetchall()) # or use fetchone()
 
