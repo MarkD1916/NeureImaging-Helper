@@ -63,18 +63,24 @@ drugs = Search.searchDrugs()
 valves = Search.searchValve()
 #print (path)
 #print (methodCalc)
-#U.dropTable("Rat")
+# U.dropTable("Drugs")
 #U.dropTable("Boundary")
-# U.dropTable("Experiments")
-# for p,n in zip(path,name):
-#     U.insertDataInTable("Experiments",[(None,p,n)])
+#U.dropTable("Experiments")
+#for p,n in zip(path,name):
+#    U.insertDataInTable("Experiments",[(None,p,n)])
 print(drugs)
 print (valves)
+
 # for d in drugs.keys():
-#     for val in drugs[d]:
-#         U.insertDataInTable("Drugs",[(None,val,d)])
+#     for val in range(len(drugs[d])):
+#         v = valves[d][val]
+#         if v==3:
+#             v = None
+#         #print (v)
+#         U.insertDataInTable("Drugs",[(None,drugs[d][val],d,v)])
+# print (U.selectAllFromTable("Drugs"))
 #
-# U.createTable("Experiments","ID INTEGER PRIMARY KEY , Path text NOT NULL, Name text NOT NULL")
+#U.createTable("Experiments","ID INTEGER PRIMARY KEY , Path text NOT NULL, Name text NOT NULL")
 #
 # U.createTable("Rat","ID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL,ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #
@@ -86,12 +92,12 @@ print (valves)
 #               Lateral text NOT NULL,\
 #               ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #
-# U.createTable("Drugs",
-#              "ID INTEGER PRIMARY KEY ,\
-#               DrugName text NOT NULL,\
-#               ExpId INTEGER NOT NULL,\
-#               Valve INTEGER NOT NULL,\
-#               FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
+U.createTable("Drugs",
+             "ID INTEGER PRIMARY KEY ,\
+              DrugName text NOT NULL,\
+              ExpId INTEGER NOT NULL,\
+              Valve INTEGER,\
+              FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #
 # U.createTable("Cords",
 #              "ID INTEGER PRIMARY KEY ,\

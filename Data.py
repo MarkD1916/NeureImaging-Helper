@@ -68,28 +68,7 @@ class Searcher():
     def searchCoordData(self):
         return
 
-    # def searchDrugsData(self):
-    #     AllDrugs=[]
-    #     for folderName in self.topLevelName:
-    #         path = os.path.join(self.mainDir,folderName)
-    #         for i in self.walklevel(path,level=0):
-    #             Drugs = []
-    #             for prot in i[-1]:
-    #
-    #                 if "Протокол от " in prot:
-    #
-    #                     text = docx2txt.process(os.path.join(path,prot))
-    #                     text_drugs = text[text.find(u"Вещество"):text.find(u"Вещество") + 300]
-    #                     for i,j in zip(np.unique(self.drugsList),range(len(self.drugsList))):
-    #                         if i.strip() in text_drugs:
-    #                             Drugs.append(i.strip())
-    #                     if len(re.findall(r"[1-9]\n", text_drugs))>len(np.unique(Drugs)):
-    #                         Drugs.append("Есть неизвестные вещества")
-    #                     AllDrugs.append(np.unique(Drugs))
-    #             if len(Drugs) == 0:
-    #                 AllDrugs.append(["Не обнаружен протокол"])
-    #
-    #     return AllDrugs
+
 
 
     def walklevel(self,some_dir, level=1):
