@@ -13,8 +13,7 @@ class Searcher():
         self.topLevelName = []
         self.drugsList=[]
         self.date = []
-        self.TrepanationWindowBordersNameCell = ["G2","G3","G4","G5"]
-        self.TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
+
         self.ROILLMFiles = []
 
 
@@ -48,6 +47,7 @@ class Searcher():
                 meth = "No xlsx file"
             methods.append(meth)
         return methods
+
     def searchDateData(self):
         date = [re.match(r"(\d+.\d+.\d+)", name).group(0)
                         for name in os.listdir(self.mainDir) if
@@ -68,9 +68,6 @@ class Searcher():
     def searchCoordData(self):
         return
 
-
-
-
     def walklevel(self,some_dir, level=1):
         some_dir = some_dir.rstrip(os.path.sep)
         assert os.path.isdir(some_dir)
@@ -90,6 +87,58 @@ class Searcher():
             except FileNotFoundError:
                 self.ROILLMFiles.append("No file")
         return self.ROILLMFiles
+
+    def getDataFromXlsx(self,sh,decodingColumn):
+        val = 2
+        drugsNameList = []
+        while val != None:
+            drugName = sh[decodingColumn + str(val)].value
+            if drugName == None:
+                break
+            drugsNameList.append(drugName)
+            val += 1
+        return drugsNameList
+
+    def pullNoneIndata(self,info):
+        lenColumns = []
+        for k in info.keys():
+            if len(info[k]) != 0:
+                lenColumns.append(len(info[k]))
+        return
+    def parseRoiLlmFile(self):
+        InfoID = {}
+        for path, ID in zip(self.ROILLMFiles,range(1,len(self.ROILLMFiles)+1)):
+            fileInfo={"Drug":[],"Valve":[],"xValue":[],"yValue":[],"Rostral":[],"Caudal":[],"Medial":[],"Lateral":[]}
+            TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
+            TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
+
+            if path!="No file":
+                bordersSizeList = [[], []]
+                workbook = openpyxl.load_workbook(path,data_only=True)
+                sh = workbook["Sheet1"]
+                # get boundary
+                for cellName, bordersSize in zip(TrepanationWindowBordersNameCell,TrepanationWindowBordersSizeCell):
+                    bordersSizeList[0].append(sh[cellName].value)
+                    bordersSizeList[1].append(str(sh[bordersSize].value))
+                    fileInfo[sh[cellName].value]=sh[bordersSize].value
+                # get Drugs
+                drugsNameList = self.getDataFromXlsx(sh=sh,decodingColumn="C")
+                fileInfo["Drug"] = drugsNameList
+                # get valves
+                valves = self.getDataFromXlsx(sh=sh,decodingColumn="B")
+                fileInfo["Valve"] = valves
+                #get xValues
+                xValues = self.getDataFromXlsx(sh=sh,decodingColumn="E")
+                fileInfo["xValue"] = xValues
+                #get yValues
+                yValues = self.getDataFromXlsx(sh=sh, decodingColumn="F")
+                fileInfo["yValue"] = yValues
+
+
+
+            InfoID[ID] = fileInfo
+        print(InfoID)
+        return
 
     def searchBounderyData(self):
         bounderyInfoID = {}

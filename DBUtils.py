@@ -53,23 +53,25 @@ class Utils():
 
 
 U = Utils()
-Search = Searcher(mainDir="/mnt/data/N_img")
+# Ищем необходимые поля
+Search = Searcher(mainDir="D:/N_img")
 Search.searchDateData()
-
 path,name = Search.searchExpPath()
-methodCalc = Search.searchExpMethod()
-print(Search.searchRoiLLMFile())
-drugs = Search.searchDrugs()
-valves = Search.searchValve()
+Search.searchRoiLLMFile()
+Search.parseRoiLlmFile()
+# methodCalc = Search.searchExpMethod()
+# print(Search.searchRoiLLMFile())
+# drugs = Search.searchDrugs()
+# valves = Search.searchValve()
 #print (path)
 #print (methodCalc)
 # U.dropTable("Drugs")
 #U.dropTable("Boundary")
-#U.dropTable("Experiments")
-#for p,n in zip(path,name):
+# U.dropTable("Experiments")
+# for p,n in zip(path,name):
 #    U.insertDataInTable("Experiments",[(None,p,n)])
-print(drugs)
-print (valves)
+# print(drugs)
+# print (valves)
 
 # for d in drugs.keys():
 #     for val in range(len(drugs[d])):
@@ -78,7 +80,7 @@ print (valves)
 #             v = None
 #         #print (v)
 #         U.insertDataInTable("Drugs",[(None,drugs[d][val],d,v)])
-# print (U.selectAllFromTable("Drugs"))
+# print (U.selectAllFromTable("Experiments"))
 #
 #U.createTable("Experiments","ID INTEGER PRIMARY KEY , Path text NOT NULL, Name text NOT NULL")
 #
@@ -92,12 +94,12 @@ print (valves)
 #               Lateral text NOT NULL,\
 #               ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #
-U.createTable("Drugs",
-             "ID INTEGER PRIMARY KEY ,\
-              DrugName text NOT NULL,\
-              ExpId INTEGER NOT NULL,\
-              Valve INTEGER,\
-              FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
+# U.createTable("Drugs",
+#              "ID INTEGER PRIMARY KEY ,\
+#               DrugName text NOT NULL,\
+#               ExpId INTEGER NOT NULL,\
+#               Valve INTEGER,\
+#               FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #
 # U.createTable("Cords",
 #              "ID INTEGER PRIMARY KEY ,\
