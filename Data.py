@@ -11,17 +11,8 @@ class Searcher():
     def __init__(self,mainDir):
         self.mainDir = mainDir
         self.topLevelName = []
-        self.drugsList=[]
         self.date = []
-
         self.ROILLMFiles = []
-
-
-
-
-    def getDrugsList(self):
-        drugsList = np.loadtxt("./drugsFile.txt",dtype='str',delimiter='\t')
-        self.drugsList = drugsList
 
     def searchExpPath(self):
         self.topLevelName = [self.mainDir+"/"+re.match(r"(\d+.\d+.\d+)\s([А-Я]+|[а-я]+)\-[1-9]+",name).group(0)
@@ -65,9 +56,6 @@ class Searcher():
                 ]
         return name
 
-    def searchCoordData(self):
-        return
-
     def walklevel(self,some_dir, level=1):
         some_dir = some_dir.rstrip(os.path.sep)
         assert os.path.isdir(some_dir)
@@ -88,112 +76,10 @@ class Searcher():
                 self.ROILLMFiles.append("No file")
         return self.ROILLMFiles
 
-    def getDataFromXlsx(self,sh,decodingColumn):
-        val = 2
-        drugsNameList = []
-        while val != None:
-            drugName = sh[decodingColumn + str(val)].value
-            if drugName == None:
-                break
-            drugsNameList.append(drugName)
-            val += 1
-        return drugsNameList
-
-    def pullNoneIndata(self,info):
-        lenColumns = []
-        for k in info.keys():
-            if len(info[k]) != 0:
-                lenColumns.append(len(info[k]))
-        return
-    def parseRoiLlmFile(self):
-        InfoID = {}
-        for path, ID in zip(self.ROILLMFiles,range(1,len(self.ROILLMFiles)+1)):
-            fileInfo={"Drug":[],"Valve":[],"xValue":[],"yValue":[],"Rostral":[],"Caudal":[],"Medial":[],"Lateral":[]}
-            TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
-            TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
-
-            if path!="No file":
-                bordersSizeList = [[], []]
-                workbook = openpyxl.load_workbook(path,data_only=True)
-                sh = workbook["Sheet1"]
-                # get boundary
-                for cellName, bordersSize in zip(TrepanationWindowBordersNameCell,TrepanationWindowBordersSizeCell):
-                    bordersSizeList[0].append(sh[cellName].value)
-                    bordersSizeList[1].append(str(sh[bordersSize].value))
-                    fileInfo[sh[cellName].value]=sh[bordersSize].value
-                # get Drugs
-                drugsNameList = self.getDataFromXlsx(sh=sh,decodingColumn="C")
-                fileInfo["Drug"] = drugsNameList
-                # get valves
-                valves = self.getDataFromXlsx(sh=sh,decodingColumn="B")
-                fileInfo["Valve"] = valves
-                #get xValues
-                xValues = self.getDataFromXlsx(sh=sh,decodingColumn="E")
-                fileInfo["xValue"] = xValues
-                #get yValues
-                yValues = self.getDataFromXlsx(sh=sh, decodingColumn="F")
-                fileInfo["yValue"] = yValues
 
 
 
-            InfoID[ID] = fileInfo
-        print(InfoID)
-        return
 
-    def searchBounderyData(self):
-        bounderyInfoID = {}
-        borders = []
-        for path, ID in zip(self.ROILLMFiles,range(1,len(self.ROILLMFiles)+1)):
-            if path!="No file":
-                bordersSizeList = [[], []]
-                workbook = openpyxl.load_workbook(path,data_only=True)
-                sh = workbook["Sheet1"]
-                for cellName, bordersSize in zip(self.TrepanationWindowBordersNameCell,self.TrepanationWindowBordersSizeCell):
-                    bordersSizeList[0].append(sh[cellName].value)
-                    bordersSizeList[1].append(str(sh[bordersSize].value))
-                bounderyInfoID[ID] = bordersSizeList
-
-        return bounderyInfoID
-
-    def searchDrugs(self):
-        coordsInfoID={}
-        for path,ID in zip(self.ROILLMFiles,range(1,len(self.ROILLMFiles)+1)):
-            decodingColumnDrugName = "C"
-            if path != "No file":
-                workbook = openpyxl.load_workbook(path, data_only=True)
-                sh = workbook["Sheet1"]
-                val = 2
-                drugsNameList=[]
-                while val!=None:
-                    drugName = sh[decodingColumnDrugName+str(val)].value
-                    if drugName==None:
-                        break
-                    drugsNameList.append(drugName)
-                    val+=1
-                coordsInfoID[ID] = drugsNameList
-        return coordsInfoID
-
-    def searchValve(self):
-
-        valveInfo = {}
-        for path, ID in zip(self.ROILLMFiles, range(1, len(self.ROILLMFiles) + 1)):
-            decodingColumnDrugName = "B"
-            if path != "No file":
-                workbook = openpyxl.load_workbook(path, data_only=True)
-                sh = workbook["Sheet1"]
-                val = 2
-                valvesNameList = []
-                while val != None:
-                    drugName = sh[decodingColumnDrugName + str(val)].value
-                    if drugName == None:
-                        break
-                    valvesNameList.append(drugName)
-                    val += 1
-                if len(valvesNameList)==0:
-                    valvesNameList = ["Не указан"]
-
-                valveInfo[ID] = valvesNameList
-        return valveInfo
 
 
 

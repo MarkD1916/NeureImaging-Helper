@@ -1,8 +1,9 @@
 class Experiments():
-    def __init__(self,ID,path, methodCalc):
+    def __init__(self,ID,path, name, date):
         self.ID: int = ID
         self.path:str = path
-        self.methodCalc:str = methodCalc
+        self.name:str = name
+        self.date: str = date
 
 
 class Rat():

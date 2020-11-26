@@ -52,13 +52,13 @@ class Utils():
 
 
 
-U = Utils()
-# Ищем необходимые поля
-Search = Searcher(mainDir="D:/N_img")
-Search.searchDateData()
-path,name = Search.searchExpPath()
-Search.searchRoiLLMFile()
-Search.parseRoiLlmFile()
+# U = Utils()
+# # Ищем необходимые поля
+# Search = Searcher(mainDir="D:/N_img")
+# Search.searchDateData()
+# path,name = Search.searchExpPath()
+# Search.searchRoiLLMFile()
+# Search.parseRoiLlmFile()
 # methodCalc = Search.searchExpMethod()
 # print(Search.searchRoiLLMFile())
 # drugs = Search.searchDrugs()
@@ -82,7 +82,7 @@ Search.parseRoiLlmFile()
 #         U.insertDataInTable("Drugs",[(None,drugs[d][val],d,v)])
 # print (U.selectAllFromTable("Experiments"))
 #
-#U.createTable("Experiments","ID INTEGER PRIMARY KEY , Path text NOT NULL, Name text NOT NULL")
+#U.createTable("Experiments","ID INTEGER PRIMARY KEY , Path text NOT NULL, Name text NOT NULL, Date text NOT NULL")
 #
 # U.createTable("Rat","ID INTEGER PRIMARY KEY , Name text NOT NULL, Mass text NOT NULL,ExpId INTEGER NOT NULL,FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #
