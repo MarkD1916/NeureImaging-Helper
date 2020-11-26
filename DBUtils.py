@@ -96,8 +96,8 @@ class Utils():
 #
 # U.createTable("Drugs",
 #              "ID INTEGER PRIMARY KEY ,\
-#               DrugName text NOT NULL,\
 #               ExpId INTEGER NOT NULL,\
+#               DrugName text NOT NULL,\
 #               Valve INTEGER,\
 #               FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
 #

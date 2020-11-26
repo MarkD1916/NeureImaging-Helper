@@ -4,7 +4,7 @@ class Parser():
     def __init__(self):
         pass
 
-    def getDataFromXlsx(self, sh, decodingColumn):
+    def getDataFromColumnXlsx(self, sh, decodingColumn):
         val = 2
         drugsNameList = []
         while val != None:
@@ -29,28 +29,15 @@ class Parser():
             TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
 
             if path!="No file":
-                bordersSizeList = [[], []]
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]
                 # get boundary
                 for cellName, bordersSize in zip(TrepanationWindowBordersNameCell,TrepanationWindowBordersSizeCell):
-                    bordersSizeList[0].append(sh[cellName].value)
-                    bordersSizeList[1].append(str(sh[bordersSize].value))
                     fileInfo[sh[cellName].value]=sh[bordersSize].value
-                # get Drugs
-                drugsNameList = self.getDataFromXlsx(sh=sh,decodingColumn="C")
-                fileInfo["Drug"] = drugsNameList
-                # get valves
-                valves = self.getDataFromXlsx(sh=sh,decodingColumn="B")
-                fileInfo["Valve"] = valves
-                #get xValues
-                xValues = self.getDataFromXlsx(sh=sh,decodingColumn="E")
-                fileInfo["xValue"] = xValues
-                #get yValues
-                yValues = self.getDataFromXlsx(sh=sh, decodingColumn="F")
-                fileInfo["yValue"] = yValues
+                for k, column in zip(fileInfo.keys(),["C","B","E","F"]):
+                    fileInfo[k] = self.getDataFromColumnXlsx(sh=sh,decodingColumn=column)
             else:
-                pass
+                for k in fileInfo.keys():
+                    fileInfo[k] = ["No file"]
             InfoID[ID] = fileInfo
-        #print(InfoID)
         return InfoID
