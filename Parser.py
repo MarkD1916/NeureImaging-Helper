@@ -38,6 +38,6 @@ class Parser():
                     fileInfo[k] = self.getDataFromColumnXlsx(sh=sh,decodingColumn=column)
             else:
                 for k in fileInfo.keys():
-                    fileInfo[k] = ["No file"]
+                    fileInfo[k] = ["Файл не найден"]
             InfoID[ID] = fileInfo
         return InfoID

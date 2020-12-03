@@ -32,9 +32,9 @@ class Utils():
         sql = "SELECT DISTINCT Name FROM Experiments,ExperimentsMetaData where (Drug LIKE {}) and ID=ExpId".format(drugsFields)
         self.cursor.execute(sql)
         return self.cursor.fetchall()
+
     def insertDataInTable(self,tableName,data):
         types = ["?" for i in range(len(data[0]))]
-        print(types)
         self.cursor.executemany("INSERT INTO {} VALUES {}".format(tableName,"("+",".join(types)+")"), data)
         self.conn.commit()
 
@@ -52,7 +52,7 @@ class Utils():
 
 
 
-# U = Utils()
+U = Utils()
 # # Ищем необходимые поля
 # Search = Searcher(mainDir="D:/N_img")
 # Search.searchDateData()
@@ -65,9 +65,10 @@ class Utils():
 # valves = Search.searchValve()
 #print (path)
 #print (methodCalc)
-# U.dropTable("Drugs")
-#U.dropTable("Boundary")
-# U.dropTable("Experiments")
+U.dropTable("Drugs")
+U.dropTable("Cords")
+U.dropTable("Experiments")
+U.dropTable("Boundary")
 # for p,n in zip(path,name):
 #    U.insertDataInTable("Experiments",[(None,p,n)])
 # print(drugs)
