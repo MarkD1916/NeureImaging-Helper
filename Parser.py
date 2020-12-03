@@ -33,7 +33,7 @@ class Parser():
                 sh = workbook["Sheet1"]
                 # get boundary
                 for cellName, bordersSize in zip(TrepanationWindowBordersNameCell,TrepanationWindowBordersSizeCell):
-                    fileInfo[sh[cellName].value]=sh[bordersSize].value
+                    fileInfo[sh[cellName].value]=[sh[bordersSize].value]
                 for k, column in zip(fileInfo.keys(),["C","B","E","F"]):
                     fileInfo[k] = self.getDataFromColumnXlsx(sh=sh,decodingColumn=column)
             else:
