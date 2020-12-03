@@ -24,11 +24,12 @@ class Boundary():
         self.ID: int = ID
 
 class Drugs():
-    def __init__(self,expID,drugName,valve,ID):
+    def __init__(self,expID=0,drugName='',valve=0,ID=0):
         self.expID:int = expID
         self.drugName:str = drugName
         self.valve:int = valve
         self.ID: int = ID
+
 
 class Cords():
     def __init__(self,expID,ID,xValue,yValue,region):

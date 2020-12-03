@@ -3,7 +3,7 @@ from Parser import Parser
 from DBUtils import Utils
 import sys
 import numpy as np
-from  Models import *
+from  Models.Model import *
 np.set_printoptions(threshold=sys.maxsize)
 #"D:/N_img"
 class InitializerDB():
@@ -16,6 +16,7 @@ class InitializerDB():
         self.drugs = []
         self.cords = []
         self.boundary = []
+        self.models = {"Drugs":Drugs()}
 
 
 
@@ -29,11 +30,15 @@ class InitializerDB():
         self.experiments = metaData
         self.experiments = np.transpose(list(self.experiments.values()))
 
-    def makeRowsForTable(self,data, keys):
+    def makeRowsForTable(self,data, keys,model):
         columns = [[] for i in range(len(keys)+1)]
+
         for expID in data.keys():
             for k,numCol in zip(keys,range(1,len(columns)+1)):
+
                 for row in data[expID][k]:
+                    setattr(self.models[model], k,row)
+                    print(getattr(self.models[model], k))
                     columns[numCol].append(row)
                     if numCol == 1:
                         columns[0].append(expID)
@@ -44,7 +49,7 @@ class InitializerDB():
     def getRoiLLMData(self):
         filesPath = self.search.searchRoiLLMFile()
         roiLLMData = self.parser.parseRoiLlmFile(filesPath)
-        drugsTableData=self.makeRowsForTable(roiLLMData,['Drug','Valve'])
+        drugsTableData=self.makeRowsForTable(roiLLMData,['drugName','Valve'],"Drugs")
         boundaryTableData = self.makeRowsForTable(roiLLMData,['Rostral','Caudal','Medial','Lateral'])
         cordsTableData = self.makeRowsForTable(roiLLMData, ['xValue', 'yValue'])
         self.drugs = drugsTableData
@@ -98,5 +103,5 @@ class InitializerDB():
 Init = InitializerDB("/mnt/data/N_img")
 Init.getExperiments()
 Init.getRoiLLMData()
-Init.createTables()
-Init.insertDataInDB()
+#Init.createTables()
+#Init.insertDataInDB()

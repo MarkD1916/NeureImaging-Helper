@@ -24,7 +24,7 @@ class Parser():
     def parseRoiLlmFile(self,ROILLMFiles):
         InfoID = {}
         for path, ID in zip(ROILLMFiles,range(1,len(ROILLMFiles)+1)):
-            fileInfo={"Drug":[],"Valve":[],"xValue":[],"yValue":[],"Rostral":[],"Caudal":[],"Medial":[],"Lateral":[]}
+            fileInfo={"drugName":[],"Valve":[],"xValue":[],"yValue":[],"Rostral":[],"Caudal":[],"Medial":[],"Lateral":[]}
             TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
             TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
 
