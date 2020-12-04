@@ -21,15 +21,15 @@ class Utils():
         path = self.db_path
         return path
 
-    def selectFromExpAndMetaExp(self,field):
-        sql = "SELECT DISTINCT {} FROM Experiments,ExperimentsMetaData WHERE ID=ExpId".format(field)
+    def selectFromExpAndMetaExp(self,field,table):
+        sql = "SELECT DISTINCT {} FROM Experiments,{} WHERE Experiments.ID=ExpId".format(field,table)
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
     def selectExpByDrugs(self, drugsFields):
         drugsFields = ["'"+d+"'" for d in drugsFields]
-        drugsFields = ' or Drug LIKE '.join(drugsFields)
-        sql = "SELECT DISTINCT Name FROM Experiments,ExperimentsMetaData where (Drug LIKE {}) and ID=ExpId".format(drugsFields)
+        drugsFields = ' or DrugName LIKE '.join(drugsFields)
+        sql = "SELECT DISTINCT Name FROM Experiments,Drugs where (DrugName LIKE {}) and Experiments.ID=ExpId".format(drugsFields)
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
@@ -52,7 +52,7 @@ class Utils():
 
 
 
-U = Utils()
+# U = Utils()
 # # Ищем необходимые поля
 # Search = Searcher(mainDir="D:/N_img")
 # Search.searchDateData()
@@ -65,10 +65,10 @@ U = Utils()
 # valves = Search.searchValve()
 #print (path)
 #print (methodCalc)
-U.dropTable("Drugs")
-U.dropTable("Cords")
-U.dropTable("Experiments")
-U.dropTable("Boundary")
+# U.dropTable("Drugs")
+# U.dropTable("Cords")
+# U.dropTable("Experiments")
+# U.dropTable("Boundary")
 # for p,n in zip(path,name):
 #    U.insertDataInTable("Experiments",[(None,p,n)])
 # print(drugs)

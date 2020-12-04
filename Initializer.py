@@ -16,11 +16,9 @@ class InitializerDB():
         self.drugs = []
         self.cords = []
         self.boundary = []
-        self.models = {"Drugs":Drugs()}
-
-
 
     def getExperiments(self):
+        expList = []
         metaData = {"path":[],"name":[],"date":[]}
         date = self.search.searchDateData()
         path,name = self.search.searchExpPath()
@@ -29,34 +27,48 @@ class InitializerDB():
         metaData["date"] = date
         self.experiments = metaData
         self.experiments = np.transpose(list(self.experiments.values()))
+        objs = [Experiments() for i in range(len(self.experiments))]
+        for r,m in zip(self.experiments,objs):
+            expList.append(self.make_model(m,['path','name','date'],r,mode='notFromFile'))
+        self.experiments = expList
 
     def makeRowsForTable(self,data, keys,model):
         columns = [[] for i in range(len(keys)+1)]
-
         for expID in data.keys():
             for k,numCol in zip(keys,range(1,len(columns)+1)):
-
                 for row in data[expID][k]:
-                    setattr(self.models[model], k,row)
-                    print(getattr(self.models[model], k))
                     columns[numCol].append(row)
                     if numCol == 1:
                         columns[0].append(expID)
-
         rows = np.transpose(columns)
-        return rows
+        modelList = []
+        objs = [model() for i in range(len(rows))]
+        for r,m in zip(rows,objs):
+            model = self.make_model(m,keys,r)
+            modelList.append(model)
+        return modelList
+
+    def make_model(self, model, atr, value,mode='fromFile'):
+        if mode=='fromFile':
+            atr = np.insert(atr,0,'expID')
+        for a,v in zip(atr,value):
+            if a=='expID':
+                v=int(v)
+            setattr(model,a,v)
+        return model
 
     def getRoiLLMData(self):
         filesPath = self.search.searchRoiLLMFile()
         roiLLMData = self.parser.parseRoiLlmFile(filesPath)
-        drugsTableData=self.makeRowsForTable(roiLLMData,['drugName','Valve'],"Drugs")
-        boundaryTableData = self.makeRowsForTable(roiLLMData,['Rostral','Caudal','Medial','Lateral'])
-        cordsTableData = self.makeRowsForTable(roiLLMData, ['xValue', 'yValue'])
+        drugsTableData=self.makeRowsForTable(roiLLMData,['drugName','valve'],model=Drugs)
+        boundaryTableData = self.makeRowsForTable(roiLLMData,['rostral','caudal','medial','lateral'],model=Boundary)
+        cordsTableData = self.makeRowsForTable(roiLLMData, ['xValue', 'yValue'],model=Cords)
+        # сущности БД на данном этапе являются списком моделей с нужными атрибутами
         self.drugs = drugsTableData
         self.cords = cordsTableData
         self.boundary = boundaryTableData
-        self.dataForInsert = {"Experiments":self.experiments,"Boundary":self.boundary,"Drugs":self.drugs,
-                              "Cords":self.cords}
+        self.dataForInsert = {"Experiments": self.experiments, "Boundary": self.boundary, "Drugs": self.drugs,
+                              "Cords": self.cords}
 
     def createTables(self):
         self.utils.createTable("Experiments",
@@ -81,27 +93,23 @@ class InitializerDB():
                      "ID INTEGER PRIMARY KEY ,\
                       xValue REAL,\
                       yValue REAL,\
-                      Region Text,\
                       ExpId INTEGER NOT NULL,\
                       FOREIGN KEY (ExpId) REFERENCES Experiments(ID)")
         return
+
     def insertDataInDB(self):
-
         for name in self.dataForInsert.keys():
-            #print(self.dataForInsert[name])
-            #if len(self.utils.selectAllFromTable(name))==0:
             for exp in self.dataForInsert[name]:
-                exp = np.insert(exp,0,None)
-                #print (exp)
-                self.utils.insertDataInTable(name, exp)
-            self.utils.selectAllFromTable(name)
-
-
+                self.utils.insertDataInTable(name, [list(exp.__dict__.values())])
         return
+
+    def showData(self):
+        print(self.utils.selectAllFromTable('Drugs'))
 
 
 Init = InitializerDB("/mnt/data/N_img")
 Init.getExperiments()
 Init.getRoiLLMData()
-#Init.createTables()
-#Init.insertDataInDB()
+# Init.createTables()
+# Init.insertDataInDB()
+Init.showData()

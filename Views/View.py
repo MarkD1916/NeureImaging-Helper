@@ -11,7 +11,6 @@ class mainWindow(Utils):
         self.TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
         self.TrepanationWindowBordersSizeCell = ["H2", "H3","H4", "H5"]
         self.db_path = self.getDBPath()
-        print(self.db_path)
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         self.root = root
@@ -47,9 +46,8 @@ class mainWindow(Utils):
         self.idxDrugs = 0
 
 
-        self.drugs = np.ravel(self.selectFromExpAndMetaExp("Drug"))
+        self.drugs = np.ravel(self.selectFromExpAndMetaExp("DrugName","Drugs"))
         self.name = np.ravel(self.selectAllFromTable("Experiments","Name"))
-        print (self.drugs)
 
         #self.Boundery = self.searchBounderyData()
         #self.coordsInfo = self.searchCoordsInfo()
@@ -71,23 +69,27 @@ class mainWindow(Utils):
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
         value_idx = [idx for idx in self.listboxName.curselection()]
+
         if len(value_name) == 0:
             self.listboxName.select_set(0)
             value_name = [self.listboxName.get(0)]
             value_idx = [0]
         self.idx = value_idx
-        print (self.idx, "Name index")
+
         return value_name, value_idx
 
     def g_i(self, nameSelectedByDrugs=None):
         if nameSelectedByDrugs!=None:
-            name = nameSelectedByDrugs
+            name = np.concatenate(nameSelectedByDrugs)
+            #print(np.concatenate(name))
         else:
             name=self.name
         self.listboxName.delete(0, 'end')
+
         itemList = np.array(name)
         for item in itemList:
             self.listboxName.insert(END, item)
+        #if nameSelectedByDrugs == None:
         self.listboxName.bind('<<ListboxSelect>>', self.selectName)
         self.listboxName.select_set(0)
         self.listboxName.event_generate("<<ListboxSelect>>")
@@ -105,6 +107,7 @@ class mainWindow(Utils):
         self.idxDrugs = value_idx
 
         ratNames = self.selectExpByDrugs(drugsFields=self.drugs[self.idxDrugs])
+
         self.g_i(ratNames)
         return value_name, value_idx
 
