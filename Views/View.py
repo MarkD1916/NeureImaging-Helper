@@ -68,6 +68,7 @@ class mainWindow(Utils):
 
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
+
         value_idx = [idx for idx in self.listboxName.curselection()]
 
         if len(value_name) == 0:
@@ -75,7 +76,7 @@ class mainWindow(Utils):
             value_name = [self.listboxName.get(0)]
             value_idx = [0]
         self.idx = value_idx
-
+        self.valueNameAfterClick=value_name
         return value_name, value_idx
 
     def g_i(self, nameSelectedByDrugs=None):
@@ -91,7 +92,13 @@ class mainWindow(Utils):
             self.listboxName.insert(END, item)
         #if nameSelectedByDrugs == None:
         self.listboxName.bind('<<ListboxSelect>>', self.selectName)
-        self.listboxName.select_set(0)
+        if nameSelectedByDrugs == None:
+            self.listboxName.select_set(0)
+        else:
+            print (self.valueNameAfterClick,self.idx)
+            print (self.valueNameBeforeClick)
+            for i in self.idx:
+                self.listboxName.select_set(i)
         self.listboxName.event_generate("<<ListboxSelect>>")
 
 
