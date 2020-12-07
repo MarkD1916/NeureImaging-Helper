@@ -1,16 +1,14 @@
 import sqlite3
 import os.path
-import string
-from Data import Searcher
-
-class Utils():
-    def __init__(self):
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        self.db_path = os.path.join(BASE_DIR, 'NBDB.db')
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
 
 
+
+class Utils(object):
+    cursor = None
+    def __init__(self,db_path=None):
+        if Utils.cursor is None and db_path!=None:
+            self.conn = sqlite3.connect(db_path)
+            self.cursor = self.conn.cursor()
 
     def selectAllFromTable(self, tableName, field="*"):
         sql = "SELECT {} FROM {}".format(field, tableName)

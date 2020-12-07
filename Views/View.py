@@ -1,37 +1,36 @@
 # coding=utf-8
 from tkinter import *
+from tkinter import filedialog,simpledialog
 from DBUtils import Utils
 import numpy as np
 import sqlite3
-from Presenters.Presenter import PlotPresenter
-class mainWindow(Utils):
-    db_path = Utils().db_path
+from Presenters.Presenter import InitPresenter
+class mainWindow():
 
     def __init__(self,root):
+        self.initPresenter = InitPresenter()
+        self.initFlag = False
         self.TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
         self.TrepanationWindowBordersSizeCell = ["H2", "H3","H4", "H5"]
-        self.db_path = self.getDBPath()
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
         self.root = root
         self.root.title("NeuroImagingHelper")
         self.root.geometry("660x300")
         self.data = []
         self.root.resizable(width=False, height=False)
         self.ROILLMFiles = []
-        self.listboxName = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
+        self.listboxName = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
         self.listboxName.place(x=10, y=32)
         self.listboxName.config()
 
-        self.listboxDate = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
+        self.listboxDate = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
         self.listboxDate.place(x=150, y=32)
         self.listboxDate.config()
 
-        self.listboxDrugs = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
+        self.listboxDrugs = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
         self.listboxDrugs.place(x=290, y=32)
         self.listboxDrugs.config()
 
-        self.listboxDrugsForPlot = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#c3f8fa')
+        self.listboxDrugsForPlot = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
         self.listboxDrugsForPlot.place(x=10, y=164)
         self.listboxDrugsForPlot.config()
 
@@ -39,32 +38,63 @@ class mainWindow(Utils):
         self.prev_button.place(x=440, y=32)
         self.prev_button.config()
 
-        #self.dirs = self.searchDataFolderName()
+        mainmenu = Menu(root)
+        root.config(menu=mainmenu)
+        filemenu = Menu(mainmenu, tearoff=0)
+        filemenu.add_command(label="Открыть БД",command=self.openDB)
+        filemenu.add_command(label="Создать новую БД",command=self.createNewDB)
+        filemenu.add_command(label="Удалить БД")
+        filemenu.add_command(label="Выход")
+
+        helpmenu = Menu(mainmenu, tearoff=0)
+        helpmenu.add_command(label="Помощь")
+        helpmenu.add_command(label="О программе")
+
+        mainmenu.add_cascade(label="Файл",
+                             menu=filemenu)
+        mainmenu.add_cascade(label="Справка",
+                             menu=helpmenu)
+
 
         self.idx = 0
         self.idxDate = 0
         self.idxDrugs = 0
 
-
-        self.drugs = np.ravel(self.selectFromExpAndMetaExp("DrugName","Drugs"))
-        self.name = np.ravel(self.selectAllFromTable("Experiments","Name"))
-
-        #self.Boundery = self.searchBounderyData()
-        #self.coordsInfo = self.searchCoordsInfo()
+        self.drugs = []#np.ravel(self.selectFromExpAndMetaExp("DrugName","Drugs"))
+        self.name = []#np.ravel(self.selectAllFromTable("Experiments","Name"))
 
 
         self.selectedRatsByDrugs = range(len(self.name))
 
         self.g_i()
         self.selectName()
-
-        #self.g_i_Date()
-        #self.selectDate()
-
         self.g_i_Drugs()
-
         self.root.configure(background='#fdfbfb')
         # self.root.mainloop()
+
+    def createNewDB(self):
+        dbPath = filedialog.askdirectory()
+        if dbPath != "":
+            dbName = simpledialog.askstring("Сохранить базу данных", "Введите имя новой базы данных",
+                                            parent=self.root)
+            self.utils = self.initPresenter.createNewDatabase(dbPath,dbName)
+            self.drugs = self.initPresenter.getDrugs()
+            self.name = self.initPresenter.getName()
+            self.g_i()
+            self.selectName()
+            self.g_i_Drugs()
+        return
+
+    def openDB(self):
+        dbPath = filedialog.askopenfilename(filetypes =[('Data Base File', '*.db')])
+        if dbPath != "":
+
+            self.utils = Utils(dbPath)
+            self.drugs = self.initPresenter.getDrugs(self.utils)
+            self.name = self.initPresenter.getName(self.utils)
+            self.g_i()
+            self.selectName()
+            self.g_i_Drugs()
 
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
@@ -96,7 +126,7 @@ class mainWindow(Utils):
             self.listboxName.select_set(0)
         else:
             print (self.valueNameAfterClick,self.idx)
-            print (self.valueNameBeforeClick)
+
             for i in self.idx:
                 self.listboxName.select_set(i)
         self.listboxName.event_generate("<<ListboxSelect>>")
@@ -113,7 +143,7 @@ class mainWindow(Utils):
         selectedDrugs = value_name
         self.idxDrugs = value_idx
 
-        ratNames = self.selectExpByDrugs(drugsFields=self.drugs[self.idxDrugs])
+        ratNames = self.utils.selectExpByDrugs(drugsFields=self.drugs[self.idxDrugs])
 
         self.g_i(ratNames)
         return value_name, value_idx
@@ -167,8 +197,7 @@ class plotWindow():
         self.update_button.config()
 
 
-    def newData(self):
-        print (PlotPresenter().currentData)
+
 
 #A = app()
 def main():

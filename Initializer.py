@@ -4,14 +4,15 @@ from DBUtils import Utils
 import sys
 import numpy as np
 from  Models.Model import *
+import os
 np.set_printoptions(threshold=sys.maxsize)
 #"D:/N_img"
 class InitializerDB():
 
-    def __init__(self,mainDir):
+    def __init__(self,mainDir,dbName):
         self.search = Searcher(mainDir=mainDir)
         self.parser = Parser()
-        self.utils = Utils()
+        self.utils = Utils(os.path.join(mainDir, dbName+'.db'))
         self.experiments = []
         self.drugs = []
         self.cords = []
@@ -103,13 +104,13 @@ class InitializerDB():
                 self.utils.insertDataInTable(name, [list(exp.__dict__.values())])
         return
 
-    def showData(self):
-        print(self.utils.selectAllFromTable('Drugs'))
+    def getDB(self):
+        #print(WDelf.utils.selectAllFromTable('Drugs'))
+        return self.utils
 
-
-Init = InitializerDB("/mnt/data/N_img")
-Init.getExperiments()
-Init.getRoiLLMData()
-# Init.createTables()
-# Init.insertDataInDB()
-Init.showData()
+# Init = InitializerDB("D:/N_img")
+# Init.getExperiments()
+# Init.getRoiLLMData()
+# # Init.createTables()
+# # Init.insertDataInDB()
+# Init.showData()
