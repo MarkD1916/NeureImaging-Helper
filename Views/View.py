@@ -6,7 +6,7 @@ import numpy as np
 import time
 import threading
 from Presenters.Presenter import InitPresenter,ObserverPresenter
-
+from Views.InsertView import InsertWindow
 class Worker(threading.Thread,ObserverPresenter):
     def __init__(self,utils=None):
         super(Worker, self).__init__()
@@ -57,7 +57,7 @@ class mainWindow():
         filemenu.add_command(label="Открыть БД",command=self.openDB)
         filemenu.add_command(label="Создать новую БД",command=self.createNewDB)
         filemenu.add_command(label="Удалить БД")
-        filemenu.add_command(label="Добавить запись в БД")
+        filemenu.add_command(label="Добавить запись в БД",command=self.insertData)
         filemenu.add_command(label="Выход")
 
         helpmenu = Menu(mainmenu, tearoff=0)
@@ -87,6 +87,10 @@ class mainWindow():
         self.root.configure(background='#fdfbfb')
         # self.root.mainloop()
 
+    def insertData(self):
+        self.newWindow = Tk()
+        self.app = InsertWindow(self.newWindow)
+        return
     def createNewDB(self):
         dbPath = filedialog.askdirectory()
         if dbPath != "":

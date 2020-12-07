@@ -31,10 +31,14 @@ class UpdatePresenter():
     def __init__(self):
         pass
 
+class InsertPresenter():
+    def __init__(self):
+        pass
+
 class ObserverPresenter():
 
     def getPath(utils):
         mainDir = '/'.join(utils.selectFieldFromTable("Path","Experiments")[0][0].split('/')[:-1])
-    # def getCurrentPath(self):
+        # def getCurrentPath(self):
         S = Searcher(mainDir=mainDir)
         print(len(S.searchExpPath()[1]))
