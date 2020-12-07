@@ -3,8 +3,21 @@ from tkinter import *
 from tkinter import filedialog,simpledialog
 from DBUtils import Utils
 import numpy as np
-import sqlite3
-from Presenters.Presenter import InitPresenter
+import time
+import threading
+from Presenters.Presenter import InitPresenter,ObserverPresenter
+
+class Worker(threading.Thread,ObserverPresenter):
+    def __init__(self,utils=None):
+        super(Worker, self).__init__()
+        self.utils = utils
+
+    def run(self):
+        while True:
+            print ("ack th")
+            ObserverPresenter.getPath(utils=self.utils)
+
+            time.sleep(1)
 class mainWindow():
 
     def __init__(self,root):
@@ -44,6 +57,7 @@ class mainWindow():
         filemenu.add_command(label="Открыть БД",command=self.openDB)
         filemenu.add_command(label="Создать новую БД",command=self.createNewDB)
         filemenu.add_command(label="Удалить БД")
+        filemenu.add_command(label="Добавить запись в БД")
         filemenu.add_command(label="Выход")
 
         helpmenu = Menu(mainmenu, tearoff=0)
@@ -64,6 +78,7 @@ class mainWindow():
         self.name = []#np.ravel(self.selectAllFromTable("Experiments","Name"))
 
 
+        #self.background(self.print_numbers(10))
         self.selectedRatsByDrugs = range(len(self.name))
 
         self.g_i()
@@ -75,6 +90,7 @@ class mainWindow():
     def createNewDB(self):
         dbPath = filedialog.askdirectory()
         if dbPath != "":
+            print(dbPath)
             dbName = simpledialog.askstring("Сохранить базу данных", "Введите имя новой базы данных",
                                             parent=self.root)
             self.utils = self.initPresenter.createNewDatabase(dbPath,dbName)
@@ -95,6 +111,8 @@ class mainWindow():
             self.g_i()
             self.selectName()
             self.g_i_Drugs()
+            self.w = Worker(self.utils)
+            self.w.start()
 
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
@@ -184,6 +202,15 @@ class mainWindow():
         # plt.plot(xRL,yRL,color='blue')
         # plt.show()
         return
+
+    def print_numbers(self,end):  # no capitals for functions in python
+        for i in range(end):
+            print(i)
+            time.sleep(1)
+
+    def background(self,func):
+        th = threading.Thread(target=func)
+        th.start()
 
 class plotWindow():
     def __init__(self, root, name):

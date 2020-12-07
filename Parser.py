@@ -15,11 +15,6 @@ class Parser():
             val += 1
         return drugsNameList
 
-    def pullNoneIndata(self, info):
-        lenColumns = []
-        for k in info.keys():
-            lenColumns.append(len(info[k]))
-        return
 
     def parseRoiLlmFile(self,ROILLMFiles):
         InfoID = {}
@@ -27,15 +22,12 @@ class Parser():
             fileInfo={"drugName":[],"valve":[],"xValue":[],"yValue":[],"rostral":[],"caudal":[],"medial":[],"lateral":[]}
             TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
             TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
-
             if path!="No file":
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]
-                # get boundary
                 for cellName, bordersSize in zip(TrepanationWindowBordersNameCell,TrepanationWindowBordersSizeCell):
                     func = lambda s: s[:1].lower() + s[1:] if s else ''
                     fileInfo[func(sh[cellName].value)]=[sh[bordersSize].value]
-                    # print (fileInfo)
                 for k, column in zip(fileInfo.keys(),["C","B","E","F"]):
                     fileInfo[k] = self.getDataFromColumnXlsx(sh=sh,decodingColumn=column)
             else:

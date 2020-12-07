@@ -1,6 +1,7 @@
 from Initializer import InitializerDB
-from DBUtils import Utils
+from Data import Searcher
 import numpy as np
+import os
 class InitPresenter():
     def __init__(self):
         self.utils=None
@@ -26,3 +27,14 @@ class InitPresenter():
         name = np.ravel(self.utils.selectAllFromTable("Experiments", "Name"))
         return name
 
+class UpdatePresenter():
+    def __init__(self):
+        pass
+
+class ObserverPresenter():
+
+    def getPath(utils):
+        mainDir = '/'.join(utils.selectFieldFromTable("Path","Experiments")[0][0].split('/')[:-1])
+    # def getCurrentPath(self):
+        S = Searcher(mainDir=mainDir)
+        print(len(S.searchExpPath()[1]))

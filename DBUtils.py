@@ -7,7 +7,7 @@ class Utils(object):
     cursor = None
     def __init__(self,db_path=None):
         if Utils.cursor is None and db_path!=None:
-            self.conn = sqlite3.connect(db_path)
+            self.conn = sqlite3.connect(db_path,check_same_thread = False)
             self.cursor = self.conn.cursor()
 
     def selectAllFromTable(self, tableName, field="*"):
@@ -47,7 +47,10 @@ class Utils(object):
                         """.format(tableName,*args))
         self.conn.commit()
 
-
+    def selectFieldFromTable(self,field,tableName):
+        sql = "SELECT {} FROM {}".format(field, tableName)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
 
 
 # U = Utils()
