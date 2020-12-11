@@ -10,16 +10,8 @@ from Views.InsertView import InsertWindow
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
-class Worker(threading.Thread,ObserverPresenter):
-    def __init__(self,utils=None):
-        super(Worker, self).__init__()
-        self.utils = utils
 
-    def run(self):
-        while True:
-            print ("ack th")
-            ObserverPresenter.getPath(utils=self.utils)
-            time.sleep(600)
+
 class mainWindow():
 
     def __init__(self,root):
@@ -188,13 +180,13 @@ class mainWindow():
         self.app = plotWindow(self.newWindow,str(self.idx))
 
     def plotBoundary(self,boundary,cmap):
-        print (boundary)
+        self.colorMapRange=[]
         if len(boundary[0])>1:
-            for i,color in zip(boundary,cmap):
+            for i,color,colorNum in zip(boundary,cmap,range(len(cmap))):
                 print (i,'i')
                 if i[0]=="Файл не найден":
                     pass
-                else:
+                if i[0] != "Файл не найден" and i[0]!='0':
                     Rostral = float(i[0])
                     print (Rostral)
                     Caudal = float(i[1])
@@ -216,21 +208,29 @@ class mainWindow():
                     self.axes.plot(xCL,yCL,color=color)
                     self.axes.plot(xLR,yLR,color=color)
                     self.axes.plot(xRL,yRL,color=color)
-
+                    self.colorMapRange.append(colorNum)
 
     def plotCord(self,cords,cmap,drugName,cmapDrugs):
         expIds = np.array(cords)[:,-1]
         expId = np.unique(expIds)
         cords = np.array(cords)[:,:2]
-
+        lineForLegend = []
+        scatterForLeg = []
+        labelForDrug = []
+        print (self.colorMapRange)
         for name,color in zip(range(len(self.valueNameAfterClick)),cmap):
-            self.axes.scatter(cords[:,0][expIds==expId[name]],cords[:,1][expIds==expId[name]],facecolors='none',
+            line1 = self.axes.scatter(cords[:,0][expIds==expId[name]],cords[:,1][expIds==expId[name]],facecolors='none',
                               edgecolors=color,linewidth=2,s=75)
-
+            lineForLegend.append(line1)
+        lineForLegend=np.array(lineForLegend)[self.colorMapRange]
         for dN,color in zip(self.selectedDrugs,cmapDrugs):
-            self.axes.scatter(cords[:, 0][drugName==dN], cords[:, 1][drugName==dN],
+            s1 = self.axes.scatter(cords[:, 0][drugName==dN], cords[:, 1][drugName==dN],
                               facecolors=color,marker='+')
-
+            if len(cords[:, 0][drugName == dN])!=0:
+                scatterForLeg.append(s1)
+                labelForDrug.append(dN)
+        self.fig.legend(lineForLegend, np.array(self.valueNameAfterClick)[self.colorMapRange])
+        self.fig.legend(scatterForLeg, labelForDrug,loc='upper left')
 
 
     def show(self):
@@ -247,6 +247,7 @@ class mainWindow():
         evenly_spaced_interval_d = np.linspace(0, 1, len(self.selectedDrugs))
         colors = [cm.rainbow(x) for x in evenly_spaced_interval]
         colorsDrugs = [cm.Paired(x) for x in evenly_spaced_interval_d]
+
         self.plotBoundary(boundary,colors)
 
         cords, drugsName = plPresenter.getCords(self.selectedDrugs)
@@ -276,7 +277,17 @@ class plotWindow():
         self.update_button.config()
 
 
+class Worker(threading.Thread,ObserverPresenter,mainWindow):
+    def __init__(self,utils=None):
+        super(Worker, self).__init__()
+        self.utils = utils
 
+    def run(self):
+        while True:
+            print ("ack th")
+            #self.show()
+            # ObserverPresenter.getPath(utils=self.utils)
+            # time.sleep(600)
 
 #A = app()
 def main():

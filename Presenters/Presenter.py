@@ -49,7 +49,8 @@ class PlotPresenter():
     def getBoundary(self,expNames):
         self.IDs = self.utils.selectExpIDByName(expNames)
         boundary = self.utils.selectBoundaryForExp(np.ravel(self.IDs))
-
+        print (boundary)
+        print (len(boundary),len(expNames))
         return boundary
 
     def getCords(self,selectedDrugs):

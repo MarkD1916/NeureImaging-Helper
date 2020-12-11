@@ -20,14 +20,19 @@ class Parser():
         InfoID = {}
         for path, ID in zip(ROILLMFiles,range(1,len(ROILLMFiles)+1)):
             fileInfo={"drugName":[],"valve":[],"xValue":[],"yValue":[],"rostral":[],"caudal":[],"medial":[],"lateral":[]}
-            TrepanationWindowBordersNameCell = ["H2", "H3", "H4", "H5"]
+            TrepanationWindowBordersNameCell = ["rostral", "caudal", "medial", "lateral"]
             TrepanationWindowBordersSizeCell = ["K2", "K3", "K4", "K5"]
             if path!="No file":
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]
                 for cellName, bordersSize in zip(TrepanationWindowBordersNameCell,TrepanationWindowBordersSizeCell):
                     func = lambda s: s[:1].lower() + s[1:] if s else ''
-                    fileInfo[func(sh[cellName].value)]=[sh[bordersSize].value]
+                    if sh[bordersSize].value!=None:
+                        fileInfo[cellName]=[sh[bordersSize].value]
+                    else:
+                        print (path)
+                        print (sh[bordersSize].value)
+                        fileInfo[cellName] = '0'
                 for k, column in zip(fileInfo.keys(),["C","B","E","F"]):
                     fileInfo[k] = self.getDataFromColumnXlsx(sh=sh,decodingColumn=column)
             else:
