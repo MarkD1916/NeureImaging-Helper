@@ -42,3 +42,11 @@ class ObserverPresenter():
         # def getCurrentPath(self):
         S = Searcher(mainDir=mainDir)
         print(len(S.searchExpPath()[1]))
+
+class PlotPresenter():
+    def __init__(self,utils):
+        self.utils = utils
+    def getBoundary(self,expNames):
+        IDs = self.utils.selectExpIDByName(expNames)
+        Boundary = self.utils.selectBoundaryForExp(np.ravel(IDs))
+        return Boundary

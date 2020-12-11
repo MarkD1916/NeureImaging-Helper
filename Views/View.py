@@ -5,8 +5,9 @@ from DBUtils import Utils
 import numpy as np
 import time
 import threading
-from Presenters.Presenter import InitPresenter,ObserverPresenter
+from Presenters.Presenter import InitPresenter,ObserverPresenter,PlotPresenter
 from Views.InsertView import InsertWindow
+import matplotlib.pyplot as plt
 class Worker(threading.Thread,ObserverPresenter):
     def __init__(self,utils=None):
         super(Worker, self).__init__()
@@ -16,8 +17,7 @@ class Worker(threading.Thread,ObserverPresenter):
         while True:
             print ("ack th")
             ObserverPresenter.getPath(utils=self.utils)
-
-            time.sleep(1)
+            time.sleep(600)
 class mainWindow():
 
     def __init__(self,root):
@@ -35,19 +35,19 @@ class mainWindow():
         self.listboxName.place(x=10, y=32)
         self.listboxName.config()
 
-        self.listboxDate = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
-        self.listboxDate.place(x=150, y=32)
-        self.listboxDate.config()
+        # self.listboxDate = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
+        # self.listboxDate.place(x=150, y=32)
+        # self.listboxDate.config()
 
         self.listboxDrugs = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
         self.listboxDrugs.place(x=290, y=32)
         self.listboxDrugs.config()
 
-        self.listboxDrugsForPlot = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
-        self.listboxDrugsForPlot.place(x=10, y=164)
-        self.listboxDrugsForPlot.config()
+        # self.listboxDrugsForPlot = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
+        # self.listboxDrugsForPlot.place(x=10, y=164)
+        # self.listboxDrugsForPlot.config()
 
-        self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.new_window)
+        self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.plotBoundery)
         self.prev_button.place(x=440, y=32)
         self.prev_button.config()
 
@@ -91,13 +91,14 @@ class mainWindow():
         self.newWindow = Tk()
         self.app = InsertWindow(self.newWindow)
         return
+
     def createNewDB(self):
         dbPath = filedialog.askdirectory()
         if dbPath != "":
             print(dbPath)
             dbName = simpledialog.askstring("Сохранить базу данных", "Введите имя новой базы данных",
                                             parent=self.root)
-            self.utils = self.initPresenter.createNewDatabase(dbPath,dbName)
+            self.utils = self.initPresenter.createNewDatabase(dbPath, dbName)
             self.drugs = self.initPresenter.getDrugs()
             self.name = self.initPresenter.getName()
             self.g_i()
@@ -115,8 +116,8 @@ class mainWindow():
             self.g_i()
             self.selectName()
             self.g_i_Drugs()
-            self.w = Worker(self.utils)
-            self.w.start()
+            # self.w = Worker(self.utils)
+            # self.w.start()
 
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
@@ -144,8 +145,10 @@ class mainWindow():
             self.listboxName.insert(END, item)
         #if nameSelectedByDrugs == None:
         self.listboxName.bind('<<ListboxSelect>>', self.selectName)
+
         if nameSelectedByDrugs == None:
             self.listboxName.select_set(0)
+
         else:
             print (self.valueNameAfterClick,self.idx)
 
@@ -183,11 +186,42 @@ class mainWindow():
         self.app = plotWindow(self.newWindow,str(self.idx))
 
     def plotBoundery(self):
-        boundary = np.array(self.Boundery)[self.selectedRatsByDrugs][self.idx]
-        Rostral = float(boundary[0][1][0])
-        Caudal = float(boundary[0][1][1])
-        Medial = float(boundary[0][1][2])
-        Lateral = float(boundary[0][1][3])
+        plPresenter = PlotPresenter(self.utils)
+        # print(self.valueNameAfterClick, self.idx)
+        boundary = plPresenter.getBoundary(self.valueNameAfterClick)
+        print (boundary)
+        if len(boundary)>1:
+            for i in boundary:
+                if boundary[0]=="Файл не найден":
+                    pass
+                else:
+                    Rostral = float(boundary[0])
+                    Caudal = float(boundary[1])
+                    Medial = float(boundary[2])
+                    Lateral = float(boundary[3])
+                    plt.scatter(Caudal,Medial,color='green')
+                    plt.scatter(Rostral,Medial,color='green')
+                    plt.scatter(Caudal,Lateral,color='green')
+                    plt.scatter(Rostral,Lateral,color='green')
+                    xCR = np.linspace(Caudal,Rostral,num=5)
+                    yCR = [Medial]*5
+                    xCL = [Caudal]*5
+                    yCL = np.linspace(Medial,Lateral,num=5)
+                    xLR = np.linspace(Caudal,Rostral,num=5)
+                    yLR = [Lateral]*5
+                    xRL = [Rostral]*5
+                    yRL = np.linspace(Medial,Lateral,num=5)
+                    plt.plot(xCR,yCR,color='blue')
+                    plt.plot(xCL,yCL,color='blue')
+                    plt.plot(xLR,yLR,color='blue')
+                    plt.plot(xRL,yRL,color='blue')
+                    plt.show()
+
+        # boundary = np.array(self.Boundery)[self.selectedRatsByDrugs][self.idx]
+        # Rostral = float(boundary[0][1][0])
+        # Caudal = float(boundary[0][1][1])
+        # Medial = float(boundary[0][1][2])
+        # Lateral = float(boundary[0][1][3])
         # plt.scatter(Caudal,Medial,color='green')
         # plt.scatter(Rostral,Medial,color='green')
         # plt.scatter(Caudal,Lateral,color='green')

@@ -52,6 +52,20 @@ class Utils(object):
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
+    def selectBoundaryForExp(self,selectedExpID):
+        selectedExpID = ["'" + str(d) + "'" for d in selectedExpID]
+        selectedExpID = ' or ExpID='.join(selectedExpID)
+        sql = "SELECT DISTINCT Rostral,Caudal,Medial,Lateral,ExpID FROM Experiments,Boundary where ExpID={}".format(selectedExpID)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
+    def selectExpIDByName(self,selectedName):
+        selectedName = ["'" + str(d) + "'" for d in selectedName]
+        selectedName = ' or name='.join(selectedName)
+        sql = "SELECT ID FROM Experiments where Name={}".format(
+            selectedName)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
 
 # U = Utils()
 # # Ищем необходимые поля
