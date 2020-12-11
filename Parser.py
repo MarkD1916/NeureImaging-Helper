@@ -20,8 +20,8 @@ class Parser():
         InfoID = {}
         for path, ID in zip(ROILLMFiles,range(1,len(ROILLMFiles)+1)):
             fileInfo={"drugName":[],"valve":[],"xValue":[],"yValue":[],"rostral":[],"caudal":[],"medial":[],"lateral":[]}
-            TrepanationWindowBordersNameCell = ["G2", "G3", "G4", "G5"]
-            TrepanationWindowBordersSizeCell = ["H2", "H3", "H4", "H5"]
+            TrepanationWindowBordersNameCell = ["H2", "H3", "H4", "H5"]
+            TrepanationWindowBordersSizeCell = ["K2", "K3", "K4", "K5"]
             if path!="No file":
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 sh = workbook["Sheet1"]

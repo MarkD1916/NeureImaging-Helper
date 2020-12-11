@@ -59,6 +59,18 @@ class Utils(object):
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
+    def selectCoordsForExp(self,selectedExpID,selectedDrugs):
+        selectedExpID = ["'" + str(d) + "'" for d in selectedExpID]
+        selectedExpID = ' or Cords.ExpID='.join(selectedExpID)
+        selectedDrugs = ["'" + str(d) + "'" for d in selectedDrugs]
+        selectedDrugs = ' or DrugName LIKE '.join(selectedDrugs)
+
+        sql = "select xValue,yValue,ID,ExpID from Cords " \
+              "where ID in (select ID from Drugs where DrugName LIKE {}) and (Cords.ExpID={}) order by Cords.ID".format(selectedDrugs,selectedExpID)
+        print (sql)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
     def selectExpIDByName(self,selectedName):
         selectedName = ["'" + str(d) + "'" for d in selectedName]
         selectedName = ' or name='.join(selectedName)
@@ -66,6 +78,15 @@ class Utils(object):
             selectedName)
         self.cursor.execute(sql)
         return self.cursor.fetchall()
+
+    def selectDrugsNameByID(self,idS):
+        selectedidS = ["'" + str(d) + "'" for d in idS]
+        selectedidS = ' or ID='.join(selectedidS)
+        sql = "SELECT DrugName FROM Drugs where ID={} order by ID".format(
+            selectedidS)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
 
 # U = Utils()
 # # Ищем необходимые поля

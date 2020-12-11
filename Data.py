@@ -68,7 +68,7 @@ class Searcher():
 
     def searchRoiLLMFile(self):
         for folderName,d in zip(self.topLevelName,self.date):
-            path = os.path.join(self.mainDir,folderName,d+"_coordinates","prog",d+"_ROI_LLM.xlsx")
+            path = os.path.join(self.mainDir,folderName,d+"_coordinates","prog",d+"_ROI_MSE_reg.xlsx")
             try:
                 workbook = openpyxl.load_workbook(path,data_only=True)
                 self.ROILLMFiles.append(path)

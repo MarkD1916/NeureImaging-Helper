@@ -8,6 +8,8 @@ import threading
 from Presenters.Presenter import InitPresenter,ObserverPresenter,PlotPresenter
 from Views.InsertView import InsertWindow
 import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 class Worker(threading.Thread,ObserverPresenter):
     def __init__(self,utils=None):
         super(Worker, self).__init__()
@@ -47,7 +49,7 @@ class mainWindow():
         # self.listboxDrugsForPlot.place(x=10, y=164)
         # self.listboxDrugsForPlot.config()
 
-        self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.plotBoundery)
+        self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.Draw)
         self.prev_button.place(x=440, y=32)
         self.prev_button.config()
 
@@ -165,7 +167,7 @@ class mainWindow():
             self.listboxDrugs.select_set(0)
             value_name = [self.listboxDrugs.get(0)]
             value_idx = [0]
-        selectedDrugs = value_name
+        self.selectedDrugs = value_name
         self.idxDrugs = value_idx
 
         ratNames = self.utils.selectExpByDrugs(drugsFields=self.drugs[self.idxDrugs])
@@ -185,24 +187,23 @@ class mainWindow():
         self.newWindow = Tk()
         self.app = plotWindow(self.newWindow,str(self.idx))
 
-    def plotBoundery(self):
-        plPresenter = PlotPresenter(self.utils)
-        # print(self.valueNameAfterClick, self.idx)
-        boundary = plPresenter.getBoundary(self.valueNameAfterClick)
+    def plotBoundary(self,boundary,cmap):
         print (boundary)
-        if len(boundary)>1:
-            for i in boundary:
-                if boundary[0]=="Файл не найден":
+        if len(boundary[0])>1:
+            for i,color in zip(boundary,cmap):
+                print (i,'i')
+                if i[0]=="Файл не найден":
                     pass
                 else:
-                    Rostral = float(boundary[0])
-                    Caudal = float(boundary[1])
-                    Medial = float(boundary[2])
-                    Lateral = float(boundary[3])
-                    plt.scatter(Caudal,Medial,color='green')
-                    plt.scatter(Rostral,Medial,color='green')
-                    plt.scatter(Caudal,Lateral,color='green')
-                    plt.scatter(Rostral,Lateral,color='green')
+                    Rostral = float(i[0])
+                    print (Rostral)
+                    Caudal = float(i[1])
+                    Medial = float(i[2])
+                    Lateral = float(i[3])
+                    self.axes.scatter(Caudal,Medial,color='green')
+                    self.axes.scatter(Rostral,Medial,color='green')
+                    self.axes.scatter(Caudal,Lateral,color='green')
+                    self.axes.scatter(Rostral,Lateral,color='green')
                     xCR = np.linspace(Caudal,Rostral,num=5)
                     yCR = [Medial]*5
                     xCL = [Caudal]*5
@@ -211,34 +212,47 @@ class mainWindow():
                     yLR = [Lateral]*5
                     xRL = [Rostral]*5
                     yRL = np.linspace(Medial,Lateral,num=5)
-                    plt.plot(xCR,yCR,color='blue')
-                    plt.plot(xCL,yCL,color='blue')
-                    plt.plot(xLR,yLR,color='blue')
-                    plt.plot(xRL,yRL,color='blue')
-                    plt.show()
+                    self.axes.plot(xCR,yCR,color=color)
+                    self.axes.plot(xCL,yCL,color=color)
+                    self.axes.plot(xLR,yLR,color=color)
+                    self.axes.plot(xRL,yRL,color=color)
 
-        # boundary = np.array(self.Boundery)[self.selectedRatsByDrugs][self.idx]
-        # Rostral = float(boundary[0][1][0])
-        # Caudal = float(boundary[0][1][1])
-        # Medial = float(boundary[0][1][2])
-        # Lateral = float(boundary[0][1][3])
-        # plt.scatter(Caudal,Medial,color='green')
-        # plt.scatter(Rostral,Medial,color='green')
-        # plt.scatter(Caudal,Lateral,color='green')
-        # plt.scatter(Rostral,Lateral,color='green')
-        # xCR = np.linspace(Caudal,Rostral,num=5)
-        # yCR = [Medial]*5
-        # xCL = [Caudal]*5
-        # yCL = np.linspace(Medial,Lateral,num=5)
-        # xLR = np.linspace(Caudal,Rostral,num=5)
-        # yLR = [Lateral]*5
-        # xRL = [Rostral]*5
-        # yRL = np.linspace(Medial,Lateral,num=5)
-        # plt.plot(xCR,yCR,color='blue')
-        # plt.plot(xCL,yCL,color='blue')
-        # plt.plot(xLR,yLR,color='blue')
-        # plt.plot(xRL,yRL,color='blue')
-        # plt.show()
+
+    def plotCord(self,cords,cmap,drugName,cmapDrugs):
+        expIds = np.array(cords)[:,-1]
+        expId = np.unique(expIds)
+        cords = np.array(cords)[:,:2]
+
+        for name,color in zip(range(len(self.valueNameAfterClick)),cmap):
+            self.axes.scatter(cords[:,0][expIds==expId[name]],cords[:,1][expIds==expId[name]],facecolors='none',
+                              edgecolors=color,linewidth=2,s=75)
+
+        for dN,color in zip(self.selectedDrugs,cmapDrugs):
+            self.axes.scatter(cords[:, 0][drugName==dN], cords[:, 1][drugName==dN],
+                              facecolors=color,marker='+')
+
+
+
+    def show(self):
+        plt.show()
+
+    def Draw(self):
+
+        self.fig, self.axes = plt.subplots(1, 1, figsize=(10, 10), dpi=100)
+
+        plPresenter = PlotPresenter(self.utils)
+        boundary = plPresenter.getBoundary(self.valueNameAfterClick)
+
+        evenly_spaced_interval = np.linspace(0, 1,len(self.valueNameAfterClick)+1)
+        evenly_spaced_interval_d = np.linspace(0, 1, len(self.selectedDrugs))
+        colors = [cm.rainbow(x) for x in evenly_spaced_interval]
+        colorsDrugs = [cm.Paired(x) for x in evenly_spaced_interval_d]
+        self.plotBoundary(boundary,colors)
+
+        cords, drugsName = plPresenter.getCords(self.selectedDrugs)
+        self.plotCord(cords,colors,drugsName,colorsDrugs)
+        self.show()
+
         return
 
     def print_numbers(self,end):  # no capitals for functions in python
