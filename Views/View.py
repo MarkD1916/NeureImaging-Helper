@@ -10,7 +10,7 @@ from Views.InsertView import InsertWindow
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
-
+import csv
 
 class mainWindow():
 
@@ -44,6 +44,10 @@ class mainWindow():
         self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.Draw)
         self.prev_button.place(x=440, y=32)
         self.prev_button.config()
+
+        self.reportButton = Button(text=u"Сделать отчет", background='#d8e1e1', command=self.makeReport)
+        self.reportButton.place(x=440, y=72)
+        self.reportButton.config()
 
         mainmenu = Menu(root)
         root.config(menu=mainmenu)
@@ -80,6 +84,19 @@ class mainWindow():
         self.g_i_Drugs()
         self.root.configure(background='#fdfbfb')
         # self.root.mainloop()
+
+    def makeReport(self):
+        drugsAndExp = self.utils.selectAllExpAndDrugs()
+        with open('Названия веществ и эксперименты.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(zip(np.array(drugsAndExp)[:,0], np.array(drugsAndExp)[:,1]))
+        f.close()
+        allDrugs = self.utils.selectAllDrugs()
+        with open('Названия веществ.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows(allDrugs)
+        f.close()
+        return
 
     def insertData(self):
         self.newWindow = Tk()

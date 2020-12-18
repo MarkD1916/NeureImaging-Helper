@@ -87,6 +87,16 @@ class Utils(object):
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
+    def selectAllExpAndDrugs(self):
+        sql = "SELECT DISTINCT Name,DrugName FROM Experiments,Drugs where Experiments.ID=ExpId"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
+    def selectAllDrugs(self):
+        sql = "SELECT DISTINCT DrugName FROM Drugs"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
 
 # U = Utils()
 # # Ищем необходимые поля
