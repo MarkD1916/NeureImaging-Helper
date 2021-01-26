@@ -11,7 +11,9 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 import csv
-
+import openpyxl
+import os
+from Data import Searcher
 class mainWindow():
 
     def __init__(self,root):
@@ -29,17 +31,13 @@ class mainWindow():
         self.listboxName.place(x=10, y=32)
         self.listboxName.config()
 
-        # self.listboxDate = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
-        # self.listboxDate.place(x=150, y=32)
-        # self.listboxDate.config()
+
 
         self.listboxDrugs = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
         self.listboxDrugs.place(x=290, y=32)
         self.listboxDrugs.config()
 
-        # self.listboxDrugsForPlot = Listbox(self.root, selectmode=MULTIPLE, exportselection=0, selectbackground='#33aafd')
-        # self.listboxDrugsForPlot.place(x=10, y=164)
-        # self.listboxDrugsForPlot.config()
+
 
         self.prev_button = Button(text=u"Построить график", background='#d8e1e1',command=self.Draw)
         self.prev_button.place(x=440, y=32)
@@ -48,6 +46,17 @@ class mainWindow():
         self.reportButton = Button(text=u"Сделать отчет", background='#d8e1e1', command=self.makeReport)
         self.reportButton.place(x=440, y=72)
         self.reportButton.config()
+
+        self.uodate_button = Button(text=u"НФ", background='#d8e1e1', command=self.addNewFiles)
+        self.uodate_button.place(x=10, y=180)
+        self.uodate_button.config( height = 3, width = 3 )
+
+        self.uodate_button_target = Button(text=u"НП", background='#d8e1e1', command=self.addNewFileTarget)
+        self.uodate_button_target.place(x=60, y=180)
+        self.uodate_button_target.config(height=3, width=3)
+
+        self.file_for_update = Entry(width = 20)
+        self.file_for_update.place(x=80, y=250, anchor="c")
 
         mainmenu = Menu(root)
         root.config(menu=mainmenu)
@@ -76,14 +85,69 @@ class mainWindow():
         self.name = []#np.ravel(self.selectAllFromTable("Experiments","Name"))
 
 
-        #self.background(self.print_numbers(10))
+
         self.selectedRatsByDrugs = range(len(self.name))
 
         self.g_i()
         self.selectName()
         self.g_i_Drugs()
         self.root.configure(background='#fdfbfb')
-        # self.root.mainloop()
+
+
+    def addNewFileTarget(self):
+        from Parser import Parser
+        Parser = Parser()
+        new_file_name = self.file_for_update.get()
+
+
+        if new_file_name=="":
+            mainDir = "/".join(self.utils.selectFolderInBD()[0][0].split('/')[:-1])
+            search = Searcher(mainDir=mainDir)
+            folderInDir = search.searchExpPath()[0]
+            folderInBase = self.utils.selectFolderInBD()
+            newFolders = np.setdiff1d(folderInDir, folderInBase)
+
+
+
+            newName = []
+            for p in newFolders:
+                newName.append(p.split("/")[-1])
+
+            date = [re.match(r"(\d+.\d+.\d+)", name).group(0)
+                    for name in newName]
+
+            for path,date in zip(newFolders,date):
+                pathToFile = os.path.join(path,date+"_coordinates", "prog", date + "_ROI_MSE_reg.xlsx")
+
+                try:
+                    workbook = openpyxl.load_workbook(pathToFile, data_only=True)
+
+                    dataFromFile = Parser.parseRoiLlmFile([pathToFile], 1)
+                    print("В " + path + " ФАЙЛ НАЙДЕН!")
+                except FileNotFoundError:
+                    print("В " + path + " файл не найден")
+        return
+
+
+    def addNewFiles(self):
+        from Parser import Parser
+        Parser = Parser()
+        newFiles = []
+        for path in self.utils.selectExpNoFiles():
+
+            pathToFile = os.path.join(path[0],path[1]+"_coordinates", "prog", path[1] + "_ROI_MSE_reg.xlsx")
+
+            try:
+                workbook = openpyxl.load_workbook(pathToFile, data_only=True)
+                newFiles.append(pathToFile)
+                dataFromFile = Parser.parseRoiLlmFile([pathToFile],path[2])
+                print (dataFromFile)#
+                self.utils.delDataByNewFile(path[2],dataFromFile)
+
+                print ("В " + str(path[2]) + " ФАЙЛ НАЙДЕН!")
+            except FileNotFoundError:
+                pass
+
 
     def makeReport(self):
         drugsAndExp = self.utils.selectAllExpAndDrugs()
@@ -106,7 +170,6 @@ class mainWindow():
     def createNewDB(self):
         dbPath = filedialog.askdirectory()
         if dbPath != "":
-            print(dbPath)
             dbName = simpledialog.askstring("Сохранить базу данных", "Введите имя новой базы данных",
                                             parent=self.root)
             self.utils = self.initPresenter.createNewDatabase(dbPath, dbName)
@@ -127,8 +190,12 @@ class mainWindow():
             self.g_i()
             self.selectName()
             self.g_i_Drugs()
-            # self.w = Worker(self.utils)
-            # self.w.start()
+
+
+
+    def updateDB(self):
+
+        return
 
     def selectName(self, *args):
         value_name = [self.listboxName.get(idx) for idx in self.listboxName.curselection()]
@@ -146,7 +213,7 @@ class mainWindow():
     def g_i(self, nameSelectedByDrugs=None):
         if nameSelectedByDrugs!=None:
             name = np.concatenate(nameSelectedByDrugs)
-            #print(np.concatenate(name))
+
         else:
             name=self.name
         self.listboxName.delete(0, 'end')
@@ -154,7 +221,7 @@ class mainWindow():
         itemList = np.array(name)
         for item in itemList:
             self.listboxName.insert(END, item)
-        #if nameSelectedByDrugs == None:
+
         self.listboxName.bind('<<ListboxSelect>>', self.selectName)
 
         if nameSelectedByDrugs == None:
@@ -302,9 +369,7 @@ class Worker(threading.Thread,ObserverPresenter,mainWindow):
     def run(self):
         while True:
             print ("ack th")
-            #self.show()
-            # ObserverPresenter.getPath(utils=self.utils)
-            # time.sleep(600)
+
 
 #A = app()
 def main():

@@ -15,6 +15,7 @@ class Searcher():
         self.ROILLMFiles = []
 
     def searchExpPath(self):
+        #print (listdir(self.mainDir))
         self.topLevelName = [self.mainDir+"/"+re.match(r"(\d+.\d+.\d+)\s([А-Я]+|[а-я]+)\-[1-9]+",name).group(0)
                           for name in os.listdir(self.mainDir) if
              os.path.isdir(os.path.join(self.mainDir, name))

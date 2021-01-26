@@ -1,5 +1,6 @@
 import sqlite3
 import os.path
+import numpy as np
 
 
 
@@ -96,6 +97,75 @@ class Utils(object):
         sql = "SELECT DISTINCT DrugName FROM Drugs"
         self.cursor.execute(sql)
         return self.cursor.fetchall()
+
+    def selectExpNoFiles(self):
+        sql = "SELECT DISTINCT Path,Date,ExpId FROM Experiments,Drugs where Experiments.ID=ExpId and DrugName LIKE 'Файл не найден'"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
+
+    # update записей в таблицах БД из ROI файла
+    def delDataByNewFile(self,idForDel,dataForUpdate):
+        for tableName in ["Cords","Drugs","Cords"]:
+            print (tableName)
+
+
+            if tableName=="Boundary":
+                for boundaryKey in ["rostral", "caudal", "medial", "lateral"]:
+                    sql_for_update = "UPDATE {} SET {}={} WHERE ExpId={}".format(tableName,boundaryKey,dataForUpdate[idForDel][boundaryKey],idForDel)
+                    self.cursor.execute(sql_for_update)
+                    self.conn.commit()
+
+
+            if tableName == "Drugs":
+                sql = "SELECT * from {} where ExpId={}".format(tableName, idForDel)
+                self.cursor.execute(sql)
+                startId = self.cursor.fetchall()[0][0]
+                sql_delete = 'DELETE FROM {} WHERE ExpId = {}'.format(tableName,idForDel)
+                self.cursor.execute(sql_delete)
+                self.conn.commit()
+
+                lenInsertedData = len(dataForUpdate[idForDel]["drugName"])
+                for id,expid,drugname,valve in zip(range(startId,lenInsertedData+startId),[idForDel]*lenInsertedData,dataForUpdate[idForDel]["drugName"],dataForUpdate[idForDel]["valve"]):
+                    data = (id,expid,drugname,valve)
+                    types = ["?" for i in range(len(data))]
+                    self.cursor.executemany("INSERT INTO {} VALUES {}".format(tableName,"("+",".join(types)+")"), [data])
+                    self.conn.commit()
+                sql = "SELECT * from {} where ExpId={}".format(tableName, idForDel)
+                self.cursor.execute(sql)
+
+
+            if tableName == "Cords":
+                sql = "SELECT * from {} where ExpId={}".format(tableName, idForDel)
+                self.cursor.execute(sql)
+                startId = self.cursor.fetchall()[0][0]
+                sql_delete = 'DELETE FROM {} WHERE ExpId = {}'.format(tableName, idForDel)
+                self.cursor.execute(sql_delete)
+                self.conn.commit()
+
+                lenInsertedData = len(dataForUpdate[idForDel]["xValue"])
+                for id, xValue, yValue,expId in zip(range(startId, lenInsertedData + startId),
+                                                      dataForUpdate[idForDel]["xValue"],
+                                                        dataForUpdate[idForDel]["yValue"],
+                                                      [idForDel] * lenInsertedData, ):
+                    data = (id, xValue, yValue, expId)
+                    types = ["?" for i in range(len(data))]
+                    self.cursor.executemany("INSERT INTO {} VALUES {}".format(tableName, "(" + ",".join(types) + ")"),
+                                            [data])
+                    self.conn.commit()
+            sql = "SELECT * from {} where ExpId={}".format(tableName, idForDel)
+            self.cursor.execute(sql)
+        return
+
+    def selectFolderInBD(self):
+        sql = "SELECT Path FROM Experiments"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
+    def addNewExp(self):
+
+        return
+
 
 
 # U = Utils()

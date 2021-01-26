@@ -60,6 +60,7 @@ class InitializerDB():
 
     def getRoiLLMData(self):
         filesPath = self.search.searchRoiLLMFile()
+
         roiLLMData = self.parser.parseRoiLlmFile(filesPath)
         drugsTableData=self.makeRowsForTable(roiLLMData,['drugName','valve'],model=Drugs)
         boundaryTableData = self.makeRowsForTable(roiLLMData,['rostral','caudal','medial','lateral'],model=Boundary)
@@ -101,6 +102,9 @@ class InitializerDB():
     def insertDataInDB(self):
         for name in self.dataForInsert.keys():
             for exp in self.dataForInsert[name]:
+                print (name)
+                print (list(exp.__dict__.values()))
+                
                 self.utils.insertDataInTable(name, [list(exp.__dict__.values())])
         return
 
