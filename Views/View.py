@@ -1,6 +1,6 @@
 # coding=utf-8
 from tkinter import *
-from tkinter import filedialog,simpledialog
+from tkinter import filedialog,simpledialog,messagebox
 from DBUtils import Utils
 import numpy as np
 import time
@@ -115,17 +115,44 @@ class mainWindow():
 
             date = [re.match(r"(\d+.\d+.\d+)", name).group(0)
                     for name in newName]
+            dataForExpInsert = []
+            dataForExpInsertFile = []
+            forMessage=[]
 
-            for path,date in zip(newFolders,date):
+            for path,date,name in zip(newFolders,date,newName):
                 pathToFile = os.path.join(path,date+"_coordinates", "prog", date + "_ROI_MSE_reg.xlsx")
 
                 try:
                     workbook = openpyxl.load_workbook(pathToFile, data_only=True)
 
                     dataFromFile = Parser.parseRoiLlmFile([pathToFile], 1)
-                    print("В " + path + " ФАЙЛ НАЙДЕН!")
+                    dataForExpInsertFile.append(dataFromFile)
+
+                    forMessage.append(name + " - " + " ФАЙЛ НАЙДЕН!")
+                    dataForExpInsert.append((path, name, date))
                 except FileNotFoundError:
-                    print("В " + path + " файл не найден")
+
+                    forMessage.append(name + " - " + " файл не найден")
+
+        message = "Мы нашли новые файлы {}".format(forMessage)
+        confirm = messagebox.askyesnocancel(
+            title="Мы нашли новые файлы {}".format(forMessage),
+            message=message,
+            default=messagebox.YES)
+
+        if confirm:
+            reply = "yes"
+        elif confirm is None:
+            reply = "cancel"
+        else:
+            reply = "no"
+        if reply == "yes":
+
+
+            for data,dataFile in zip(dataForExpInsert,dataForExpInsertFile):
+                self.utils.addNewExp(data,dataFile)
+
+
         return
 
 

@@ -162,9 +162,108 @@ class Utils(object):
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
-    def addNewExp(self):
+    def addNewExp(self, dataForInsert,dataForExpInsertFile):
+        sql = "SELECT max(ID) from Experiments"
+        self.cursor.execute(sql)
+
+        lastID = self.cursor.fetchall()[0][0]+1
+
+        dataForInsert = list(dataForInsert)
+
+        dataForInsert.insert(0, lastID)
+
+        types = ["?" for i in range(len(dataForInsert))]
+        self.cursor.executemany("INSERT INTO {} VALUES {}".format("Experiments", "(" + ",".join(types) + ")"),
+                                [dataForInsert])
+        self.conn.commit()
+
+
+
+        for tableName in ["Cords","Drugs","Cords","Boundary"]:
+
+            if tableName=="Boundary":
+                boundaryData = []
+                for boundaryKey in ["rostral", "caudal", "medial", "lateral"]:
+
+                    getData = dataForExpInsertFile[1][boundaryKey]
+                    boundaryData.append(getData)
+                boundaryData.append(lastID)
+                sql = "SELECT max(ID) from Boundary"
+                self.cursor.execute(sql)
+
+                lastIDBoundary = self.cursor.fetchall()[0][0] + 1
+                #print (lastIDBoundary)
+                boundaryData.insert(0,lastIDBoundary)
+                types = ["?" for i in range(len(boundaryData))]
+                self.cursor.executemany("INSERT INTO {} VALUES {}".format("Boundary", "(" + ",".join(types) + ")"),
+                                        [boundaryData])
+                self.conn.commit()
+            if tableName == "Drugs":
+                sql = "SELECT max(ID) from Drugs"
+                self.cursor.execute(sql)
+
+                lastIDDrugs = self.cursor.fetchall()[0][0] + 1
+                # print (lastIDBoundary)
+                lenInsertedData = len(dataForExpInsertFile[1]["drugName"])
+                for id,expid,drugname,valve in zip(range(lastIDDrugs,lenInsertedData+lastIDDrugs),[lastID]*lenInsertedData,dataForExpInsertFile[1]["drugName"],dataForExpInsertFile[1]["valve"]):
+                    data = (id,expid,drugname,valve)
+                    types = ["?" for i in range(len(data))]
+                    self.cursor.executemany("INSERT INTO {} VALUES {}".format("Drugs", "(" + ",".join(types) + ")"),
+                                            [data])
+                    self.conn.commit()
+
+
+
+            if tableName == "Cords":
+                sql = "SELECT max(ID) from Cords"
+                self.cursor.execute(sql)
+
+                lastIDCords = self.cursor.fetchall()[0][0] + 1
+                lenInsertedData = len(dataForExpInsertFile[1]["xValue"])
+                for id, xValue, yValue,expId in zip(range(lastIDCords, lenInsertedData + lastIDCords),
+                                                      dataForExpInsertFile[1]["xValue"],
+                                                        dataForExpInsertFile[1]["yValue"],
+                                                      [lastID] * lenInsertedData, ):
+                    data = (id, xValue, yValue, expId)
+                    print (data)
+                    types = ["?" for i in range(len(data))]
+                    self.cursor.executemany("INSERT INTO {} VALUES {}".format("Cords", "(" + ",".join(types) + ")"),
+                                            [data])
+                    self.conn.commit()
+
+        sql = "SELECT * from Experiments"
+        self.cursor.execute(sql)
+        print(self.cursor.fetchall())
+
+        sql = "SELECT * from Boundary where ExpID = 13"
+        self.cursor.execute(sql)
+        print(self.cursor.fetchall())
+
+        sql = "SELECT * from Drugs where ExpID = 13"
+        self.cursor.execute(sql)
+        print(self.cursor.fetchall())
+
+        sql = "SELECT * from Cords where ExpID = 13"
+        self.cursor.execute(sql)
+        print(self.cursor.fetchall())
 
         return
+
+    def returnNewExpID(self):
+        sql = "SELECT max(ID) from Experiments"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()[0][0]+1
+
+    # def insertDataFromFile(self):
+    #     for tableName in ["Cords","Drugs","Cords"]:
+    #         print (tableName)
+    #
+    #         if tableName=="Boundary":
+    #             for boundaryKey in ["rostral", "caudal", "medial", "lateral"]:
+    #                 sql_for_update = "UPDATE {} SET {}={} WHERE ExpId={}".format(tableName,boundaryKey,dataForUpdate[idForDel][boundaryKey],idForDel)
+    #                 self.cursor.execute(sql_for_update)
+    #                 self.conn.commit()
+
 
 
 
